@@ -1,5 +1,5 @@
 /*
- * Util.java
+ * BlockUtil.java
  * 
  * MorePhysics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
@@ -20,9 +20,18 @@
 
 package com.wolvencraft.morephysics.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
+/**
+ * A set of methods used to perform operations with blocks
+ * @author bitWolfy
+ *
+ */
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
 public class BlockUtil {
     
     /**

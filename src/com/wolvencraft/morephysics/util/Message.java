@@ -1,5 +1,5 @@
 /*
- * Util.java
+ * Message.java
  * 
  * MorePhysics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
@@ -23,6 +23,9 @@ package com.wolvencraft.morephysics.util;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -31,10 +34,15 @@ import org.bukkit.entity.Player;
 import com.wolvencraft.morephysics.Configuration;
 import com.wolvencraft.morephysics.MorePhysics;
 
+/**
+ * A collection of methods utilized to send messages to the players
+ * @author bitWolfy
+ *
+ */
+@NoArgsConstructor(access=AccessLevel.PRIVATE)
 public class Message {
-    private static Logger logger = MorePhysics.getInstance().getLogger();
     
-    private Message() { }
+    private static Logger logger = MorePhysics.getInstance().getLogger();
     
     /**
      * Send a message to the specified CommandSender.<br />
