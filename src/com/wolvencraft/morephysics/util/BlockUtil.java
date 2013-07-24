@@ -20,17 +20,10 @@
 
 package com.wolvencraft.morephysics.util;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
-public class Util {
-    
-    public static String parseChatColors(String str) {
-        if(str == null) return "";
-        for(ChatColor color : ChatColor.values()) str = str.replaceAll("&" + color.getChar(), color + "");
-        return str;
-    }
+public class BlockUtil {
     
     /**
      * Takes in <b>MaterialData</b> and returns a user-friendly name.<br />
@@ -236,7 +229,7 @@ public class Util {
      * @param str String String to be checked
      * @return boolean True if a string is numeric
      */
-    public static boolean isNumeric(String str) {  
+    private static boolean isNumeric(String str) {  
       try { Double.parseDouble(str); }
       catch(NumberFormatException nfe) { return false; }  
       return true;  

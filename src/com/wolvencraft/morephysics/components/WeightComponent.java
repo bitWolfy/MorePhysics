@@ -45,7 +45,7 @@ import org.bukkit.material.MaterialData;
 import com.wolvencraft.morephysics.MorePhysics;
 import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
 import com.wolvencraft.morephysics.util.Message;
-import com.wolvencraft.morephysics.util.Util;
+import com.wolvencraft.morephysics.util.BlockUtil;
 
 public class WeightComponent extends Component implements Listener {
     
@@ -71,7 +71,7 @@ public class WeightComponent extends Component implements Listener {
         for(String raw : getWeightData().getStringList("blocks")) {
             String[] data = raw.split(",");
             if(data.length != 2) continue;
-            try { weightMap.put(Util.getBlockMaterial(data[0]), Double.parseDouble(data[1])); }
+            try { weightMap.put(BlockUtil.getBlockMaterial(data[0]), Double.parseDouble(data[1])); }
             catch (NumberFormatException nfe) { continue; }
             catch (Exception ex) { continue; }
         }

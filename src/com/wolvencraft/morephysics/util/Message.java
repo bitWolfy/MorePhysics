@@ -45,7 +45,7 @@ public class Message {
     public static void send(CommandSender sender, String message) {
         if(sender == null) sender = Bukkit.getServer().getConsoleSender();
         if(message == null) return;
-        message = Util.parseChatColors(message);
+        message = parseChatColors(message);
         sender.sendMessage(message);
     }
     
@@ -79,7 +79,7 @@ public class Message {
     public static void broadcast(String message) {
         for (Player p : Bukkit.getServer().getOnlinePlayers())
             sendFormatted(p, ChatColor.DARK_GREEN, Configuration.LogPrefix.toString(), message);
-        log(Util.parseChatColors(message));
+        log(parseChatColors(message));
     }
     
     /**
@@ -138,6 +138,17 @@ public class Message {
      */
     public static String fillString(String str, int length) {
         while(str.length() < length) str += " ";
+        return str;
+    }
+    
+    /**
+     * Parses color codes in the String and replaces them with ChatColors
+     * @param str String to parse
+     * @return Result string
+     */
+    private static String parseChatColors(String str) {
+        if(str == null) return "";
+        for(ChatColor color : ChatColor.values()) str = str.replaceAll("&" + color.getChar(), color + "");
         return str;
     }
 }
