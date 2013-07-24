@@ -1,0 +1,8 @@
+name: MorePhysics
+main: com.wolvencraft.morephysics.MorePhysics
+version: 2.4.0
+authors: [FriedTaco, bitWolfy]
+permissions:
+    morephysics.exempt:
+        description: Exempts the player from the effects of MorePhysics
+        default: false

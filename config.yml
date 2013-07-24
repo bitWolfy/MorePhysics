@@ -1,0 +1,43 @@
+arrows:
+    enabled: true
+    modifiers:
+        head: 3
+        neck: 4
+        torso: 2
+        crotch: 10
+        legs: 0.8
+        toes: 3
+        unknown: 1
+    permission: 'morephysics.exempt.arrows'
+boats:
+    enabled: true
+    permission: 'morephysics.exempt.boats'
+minecarts:
+    enabled: true
+    min-detected-speed: 0.01
+    modifiers:
+        players:
+            damage: 1.5
+            knockback: true
+        mobs:
+            damage: 2
+            knockback: true
+        animals:
+            damage: 1.3
+            knockback: true
+    death-message: "&e<PLAYER> was killed by a speeding minecart"
+    permission: 'morephysics.exempt.minecarts'
+pistons:
+    enabled: true
+    calculate-player-weight: true
+    power:
+        entities: 4.0
+        blocks: 3.0
+    permission: 'morephysics.exempt.pistons'
+weight:
+    enabled: true
+    modifier: 0.01
+    permission: 'morephysics.exempt.weight'
+misc:
+    debug: false
+    log-prefix: "[MorePhysics]"
