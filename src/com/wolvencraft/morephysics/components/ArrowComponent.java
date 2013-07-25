@@ -25,11 +25,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
+import com.wolvencraft.morephysics.ComponentManager.ComponentType;
+import com.wolvencraft.morephysics.util.Experimental;
+import com.wolvencraft.morephysics.util.Message;
+import com.wolvencraft.morephysics.util.Experimental.ParticleEffectType;
 
 /**
  * Arrow damage component.
@@ -40,13 +44,33 @@ import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
  */
 public class ArrowComponent extends Component implements Listener {
     
+    private boolean effects;
+    
     public ArrowComponent() {
-        super(PluginComponent.ARROW);
+        super(ComponentType.ARROW);
         
         if(!enabled) return;
         
         HitArea.clearCache();
+        effects = MorePhysics.getInstance().getConfig().getBoolean("arrows.effects");
+    }
+    
+    @Override
+    public void onEnable() {
+        if(effects && !MorePhysics.isCraftBukkitCompatible()) {
+            Message.log(
+                    "|  |- Particle effects are not compatible with  |",
+                    "|     your CraftBukkit version. Disabling...    |"
+                    );
+            effects = false;
+        }
+        
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+    }
+    
+    @Override
+    public void onDisable() {
+        HandlerList.unregisterAll(this);
     }
     
     @EventHandler(priority = EventPriority.HIGH)
@@ -67,12 +91,16 @@ public class ArrowComponent extends Component implements Listener {
         else if(diff <= 0.17 && diff > 0) hitArea = HitArea.TOE;
         else hitArea = HitArea.UNKNOWN;
         
+        if(effects && (hitArea.equals(HitArea.HEAD) || hitArea.equals(HitArea.NECK) || hitArea.equals(HitArea.CROTCH))) {
+            Experimental.createEffect(ParticleEffectType.CRIT, "", event.getEntity().getLocation(), 1f, 1f, 1f, 20);
+        }
+        
         event.setDamage(event.getDamage() * hitArea.modifier);
     }
     
     private enum HitArea {
         
-        HEAD    ("head"),       // 8 px = 0.4624 meters
+        HEAD    ("head"),
         NECK    ("neck"),
         TORSO   ("torso"),
         CROTCH  ("crotch"),

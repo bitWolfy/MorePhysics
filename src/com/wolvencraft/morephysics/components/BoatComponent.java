@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
@@ -36,7 +37,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
+import com.wolvencraft.morephysics.ComponentManager.ComponentType;
+import com.wolvencraft.morephysics.util.Experimental;
+import com.wolvencraft.morephysics.util.Message;
 
 /**
  * Boat component.
@@ -47,11 +50,34 @@ import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
  */
 public class BoatComponent extends Component implements Listener {
     
+    private double damageMultiplyer;
+    private boolean effects;
+    
     public BoatComponent() {
-        super(PluginComponent.BOAT);
+        super(ComponentType.BOAT);
         
         if(!enabled) return;
+        
+        damageMultiplyer = MorePhysics.getInstance().getConfig().getDouble("boats.damage-multiplyer");
+        effects = MorePhysics.getInstance().getConfig().getBoolean("boats.effects");
+    }
+    
+    @Override
+    public void onEnable() {
+        if(effects && !MorePhysics.isCraftBukkitCompatible()) {
+            Message.log(
+                    "|  |- Particle effects are not compatible with  |",
+                    "|     your CraftBukkit version. Disabling...    |"
+                    );
+            effects = false;
+        }
+        
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+    }
+    
+    @Override
+    public void onDisable() {
+        HandlerList.unregisterAll(this);
     }
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -60,12 +86,14 @@ public class BoatComponent extends Component implements Listener {
         
         Boat boat = (Boat) event.getVehicle();
         Entity passenger = boat.getPassenger();
-        if (passenger == null || (passenger != null && ((Player) passenger).hasPermission(permission))) return;
+        if (passenger == null || (passenger != null && !((Player) passenger).hasPermission(permission))) return;
         
         if(!boat.hasMetadata("sinking") && !boat.isDead() && (event.getDamage() >= 2)) {
             boat.setMetadata("sinking", new FixedMetadataValue(MorePhysics.getInstance(), true));
-            boat.setVelocity(boat.getVelocity().subtract(new Vector(0,.05,0)));
+            boat.setVelocity(boat.getVelocity().subtract(new Vector(0,.05,0).multiply(damageMultiplyer)));
         }
+
+        if(effects) Experimental.createBlockEffect(boat.getLocation(), 22);
     }
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -82,14 +110,14 @@ public class BoatComponent extends Component implements Listener {
         if(!(vehicle instanceof Boat) || !vehicle.hasMetadata("sinking")) return;
         
         Entity passenger = vehicle.getPassenger();
-        if (passenger == null || (passenger != null && ((Player) passenger).hasPermission(permission))) return;
+        if (passenger == null || (passenger != null && !((Player) passenger).hasPermission(permission))) return;
         
         Material blockUnder = vehicle.getWorld().getBlockAt(event.getTo()).getRelative(0, -1, 0).getType();
         
         if(blockUnder != Material.WATER && blockUnder != Material.STATIONARY_WATER) return;
         
         Vector vec  = event.getVehicle().getVelocity();
-        vec.subtract(new Vector(0,.05,0));
+        vec.subtract(new Vector(0,.05,0).multiply(damageMultiplyer));
         event.getVehicle().setVelocity(vec);
     }
     

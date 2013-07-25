@@ -28,23 +28,37 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import com.wolvencraft.morephysics.components.ArrowComponent;
+import com.wolvencraft.morephysics.components.BloodComponent;
 import com.wolvencraft.morephysics.components.BoatComponent;
 import com.wolvencraft.morephysics.components.Component;
 import com.wolvencraft.morephysics.components.MinecartComponent;
 import com.wolvencraft.morephysics.components.PistonComponent;
 import com.wolvencraft.morephysics.components.WeightComponent;
 import com.wolvencraft.morephysics.util.ExceptionHandler;
+import com.wolvencraft.morephysics.util.Message;
 
+/**
+ * Handles components that are enabled during plugin startup
+ * @author bitWolfy
+ *
+ */
 public class ComponentManager {
     
-    private static List<Component> components = new ArrayList<Component>();
+    private List<Component> components;
     
     public ComponentManager() {
-        components.clear();
+        components = new ArrayList<Component>();
         
-        for(PluginComponent component : PluginComponent.values()) {
+        for(ComponentType component : ComponentType.values()) {
             try {
                 Component componentObj = component.component.newInstance();
+                if(componentObj.isEnabled()) {
+                    Message.log("| [X] " + Message.fillString(component.component.getSimpleName() + " is enabled", 42) + "|");
+                    componentObj.enable();
+                } else
+                    Message.log("| [X] " + Message.fillString(component.component.getSimpleName() + " is not enabled", 42) + "|");
+                
+                
                 components.add(componentObj);
             } catch(Throwable t) {
                 ExceptionHandler.handle(t);
@@ -53,19 +67,44 @@ public class ComponentManager {
         }
     }
     
+    /**
+     * Disables all components
+     */
+    public void disable() {
+        for(Component component : components) {
+            component.disable();
+        }
+        
+        components.clear();
+    }
+    
+    /**
+     * Returns the component of the specified type
+     * @param type Component type
+     * @return Requested component, or <b>null</b> if it does not exist
+     */
+    public Component getComponent(ComponentType type) {
+        for(Component component : components) {
+            if(component.getType() == type) return component;
+        }
+        return null;
+    }
+    
     @AllArgsConstructor(access=AccessLevel.PUBLIC)
     @Getter(AccessLevel.PUBLIC)
-    public enum PluginComponent {
+    public enum ComponentType {
         
-        ARROW           ("arrows", ArrowComponent.class),
-        BOAT            ("boats", BoatComponent.class),
-        MINECART        ("minecarts", MinecartComponent.class),
-        PISTON          ("pistons", PistonComponent.class),
-        WEIGHT          ("weight", WeightComponent.class),
+        ARROW           ("arrows", ArrowComponent.class, "morephysics.arrows"),
+        BLOOD           ("blood", BloodComponent.class, "morephysics.blood"),
+        BOAT            ("boats", BoatComponent.class, "morephysics.boats"),
+        MINECART        ("minecarts", MinecartComponent.class, "morephysics.minecarts"),
+        PISTON          ("pistons", PistonComponent.class, "morephysics.pistons"),
+        WEIGHT          ("weight", WeightComponent.class, "morephysics.weight"),
         ;
 
         private String configKey;
         private Class<? extends Component> component;
+        private String permission;
         
     }
     

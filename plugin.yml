@@ -4,6 +4,32 @@ website: http://dev.bukkit.org/bukkit-plugins/morephysics/
 version: 2.4.0
 authors: [FriedTaco, bitWolfy]
 permissions:
-    morephysics.exempt:
-        description: Exempts the player from the effects of MorePhysics
+    morephysics.*:
+        description: Applies the effects of MorePhysics to players
         default: false
+        children:
+            morephysics.arrows: true
+            morephysics.blood: true
+            morephysics.boats: true
+            morephysics.minecarts: true
+            morephysics.pistons: true
+            morephysics.weight: true
+    morephysics.arrows:
+        description: Enables body part-specific critical damage
+        default: false
+    morephysics.blood:
+        description: Enables blood particle effects
+        default: false
+    morephysics.boats:
+        description: Enables boats sinking when receiving damage
+        default: false
+    morephysics.minecarts:
+        description: Enables damage dealt by moving minecarts
+        default: false
+    morephysics.pistons:
+        description: Enables launchy pistons
+        default: false
+    morephysics.weight:
+        description: Enables inventory weight
+        default: false
+          

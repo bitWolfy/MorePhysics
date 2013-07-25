@@ -29,12 +29,15 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -43,7 +46,7 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
+import com.wolvencraft.morephysics.ComponentManager.ComponentType;
 import com.wolvencraft.morephysics.util.Message;
 import com.wolvencraft.morephysics.util.Util;
 
@@ -57,20 +60,33 @@ import com.wolvencraft.morephysics.util.Util;
 public class WeightComponent extends Component implements Listener {
     
     private Map<MaterialData, Double> weightMap;
+    
     private double defaultWeight;
     private double speedMultiplyer;
+    private boolean exemptCreative;
     
     private FileConfiguration weightData = null;
     private File weightDataFile = null;
     
     public WeightComponent() {
-        super(PluginComponent.WEIGHT);
+        super(ComponentType.WEIGHT);
         
         if(!enabled) return;
         
-        Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+        defaultWeight = getWeightData().getDouble("general.default");
         
+        FileConfiguration configFile = MorePhysics.getInstance().getConfig();
+        speedMultiplyer = configFile.getDouble("weight.multiplyer");
+        exemptCreative = configFile.getBoolean("weight.exempt-creative");
+    }
+    
+    @Override
+    public void onEnable() {
         if(!new File(MorePhysics.getInstance().getDataFolder(), "weight.yml").exists()) {
+            Message.log(
+                    "|  |- weight.yml not found, copying it over     |",
+                    "|     for you                                   |"
+                    );
             getWeightData().options().copyDefaults(true);
             saveWeightData();
         }
@@ -85,8 +101,12 @@ public class WeightComponent extends Component implements Listener {
             catch (Exception ex) { continue; }
         }
         
-        defaultWeight = getWeightData().getDouble("general.default");
-        speedMultiplyer = MorePhysics.getInstance().getConfig().getDouble("weight.multiplyer");
+        Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+    }
+    
+    @Override
+    public void onDisable() {
+        HandlerList.unregisterAll(this);
     }
     
     /**
@@ -100,8 +120,8 @@ public class WeightComponent extends Component implements Listener {
         ListIterator<ItemStack> it = inventory.iterator();
         while(it.hasNext()) {
             ItemStack curItem = (ItemStack) it.next();
+            if(curItem == null) continue;
             totalWeight += getStackWeight(curItem);
-            it.remove();
         }
         
         for(ItemStack armor : inventory.getArmorContents()) totalWeight += getStackWeight(armor);
@@ -135,7 +155,7 @@ public class WeightComponent extends Component implements Listener {
      * Reloads the weight configuration from file
      */
     private void reloadWeightData() {        
-        if (weightDataFile == null) weightDataFile = new File(MorePhysics.getInstance().getDataFolder(), "english.yml");
+        if (weightDataFile == null) weightDataFile = new File(MorePhysics.getInstance().getDataFolder(), "weight.yml");
         weightData = YamlConfiguration.loadConfiguration(weightDataFile);
         
         InputStream defConfigStream = MorePhysics.getInstance().getResource("weight.yml");
@@ -166,7 +186,7 @@ public class WeightComponent extends Component implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if(player.hasPermission(permission)) return;
+        if(!player.hasPermission(permission)) return;
         
         setPlayerSpeed(player, getPlayerWeight(player));
     }
@@ -174,17 +194,50 @@ public class WeightComponent extends Component implements Listener {
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-        if(player.hasPermission(permission)) return;
+        if(!player.hasPermission(permission)
+                || (exemptCreative
+                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
         
-        setPlayerSpeed(player, getPlayerWeight(player));
+        double weight = getPlayerWeight(player);
+        setPlayerSpeed(player, weight);
+        Message.debug(
+                "Player weight = " + weight,
+                "Setting speed to " + player.getWalkSpeed()
+                );
     }
-
+    
     @EventHandler
     public void onItemPickup(PlayerPickupItemEvent event) {
         Player player = (Player) event.getPlayer();
-        if(player.hasPermission(permission)) return;
+        if(!player.hasPermission(permission)
+                || (exemptCreative
+                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
         
         setPlayerSpeed(player, getPlayerWeight(player));
+        
+        double weight = getPlayerWeight(player);
+        setPlayerSpeed(player, weight);
+        Message.debug(
+                "Player weight = " + weight,
+                "Setting speed to " + player.getWalkSpeed()
+                );
+    }
+    
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent event) {
+        Player player = (Player) event.getPlayer();
+        if(!player.hasPermission(permission)
+                || (exemptCreative
+                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
+        
+      setPlayerSpeed(player, getPlayerWeight(player));
+      
+      double weight = getPlayerWeight(player);
+      setPlayerSpeed(player, weight);
+      Message.debug(
+              "Player weight = " + weight,
+              "Setting speed to " + player.getWalkSpeed()
+              );
     }
     
     /**

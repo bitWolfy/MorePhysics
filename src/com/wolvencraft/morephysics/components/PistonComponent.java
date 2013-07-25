@@ -29,17 +29,22 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
+import com.wolvencraft.morephysics.ComponentManager.ComponentType;
+import com.wolvencraft.morephysics.util.Experimental;
+import com.wolvencraft.morephysics.util.Message;
+import com.wolvencraft.morephysics.util.Experimental.ParticleEffectType;
 
 /**
  * Piston component.
@@ -51,16 +56,36 @@ import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
 public class PistonComponent extends Component implements Listener {
     
     private boolean calculatePlayerWeight;
+    private boolean effects;
     
     public PistonComponent() {
-        super(PluginComponent.PISTON);
+        super(ComponentType.PISTON);
         
         if(!enabled) return;
         
         LaunchPower.clearCache();
-        calculatePlayerWeight = MorePhysics.getInstance().getConfig().getBoolean("pistons.calculate-player-weight");
+        
+        FileConfiguration configFile = MorePhysics.getInstance().getConfig();
+        calculatePlayerWeight = configFile.getBoolean("pistons.calculate-player-weight");
+        effects = configFile.getBoolean("pistons.effects");
+    }
+    
+    @Override
+    public void onEnable() {
+        if(effects && !MorePhysics.isCraftBukkitCompatible()) {
+            Message.log(
+                    "|  |- Particle effects are not compatible with  |",
+                    "|     your CraftBukkit version. Disabling...    |"
+                    );
+            effects = false;
+        }
         
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+    }
+    
+    @Override
+    public void onDisable() {
+        HandlerList.unregisterAll(this);
     }
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -81,6 +106,8 @@ public class PistonComponent extends Component implements Listener {
             new LaunchedBlock(block, direction, pushDistance, i);
             i++;
         }
+        
+        if(effects) Experimental.createEffect(ParticleEffectType.EXPLODE, "", event.getBlock().getLocation(), 1f, 1f, 1f, 20);
     }
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -98,12 +125,15 @@ public class PistonComponent extends Component implements Listener {
             Vector entityVelocity = pushedEntity.getVelocity().clone();
             
             if(calculatePlayerWeight && pushedEntity instanceof Player) {
+                if(!((Player) pushedEntity).hasPermission(permission)) continue;
                 // TODO Calculate the player weight
                 pushedEntity.setVelocity(entityVelocity.add(velocity));
             } else {
                 pushedEntity.setVelocity(entityVelocity.add(velocity));
             }
         }
+        
+        if(effects) Experimental.createEffect(ParticleEffectType.EXPLODE, "", event.getBlock().getLocation(), 1f, 1f, 1f, 20);
     }
     
     /**

@@ -21,6 +21,7 @@
 package com.wolvencraft.morephysics.components;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Animals;
@@ -33,6 +34,7 @@ import org.bukkit.entity.Slime;
 import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -44,7 +46,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
+import com.wolvencraft.morephysics.ComponentManager.ComponentType;
+import com.wolvencraft.morephysics.util.Experimental;
+import com.wolvencraft.morephysics.util.Message;
+import com.wolvencraft.morephysics.util.Experimental.ParticleEffectType;
 
 /**
  * Minecart component.
@@ -57,9 +62,10 @@ public class MinecartComponent extends Component implements Listener {
     
     private double minSpeedSquared;
     private String deathMessage;
+    private boolean effects;
     
     public MinecartComponent() {
-        super(PluginComponent.MINECART);
+        super(ComponentType.MINECART);
         
         if(!enabled) return;
         
@@ -67,8 +73,25 @@ public class MinecartComponent extends Component implements Listener {
         FileConfiguration configFile = MorePhysics.getInstance().getConfig();
         minSpeedSquared = Math.pow(configFile.getDouble("minecarts.min-detected-speed"), 2);
         deathMessage = configFile.getString("minecarts.death-message");
+        effects = configFile.getBoolean("minecarts.effects");
+    }
+    
+    @Override
+    public void onEnable() {
+        if(effects && !MorePhysics.isCraftBukkitCompatible()) {
+            Message.log(
+                    "|  |- Particle effects are not compatible with  |",
+                    "|     your CraftBukkit version. Disabling...    |"
+                    );
+            effects = false;
+        }
         
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+    }
+    
+    @Override
+    public void onDisable() {
+        HandlerList.unregisterAll(this);
     }
     
     @SuppressWarnings("deprecation")
@@ -95,7 +118,7 @@ public class MinecartComponent extends Component implements Listener {
                 final Player victim = (Player) victimEntity;
                 
                 // Process permissions
-                if(victim.hasPermission(permission)) continue;
+                if(!victim.hasPermission(permission)) continue;
                 
                 // Process damage handling
                 int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.PLAYERS.modifier));
@@ -157,6 +180,12 @@ public class MinecartComponent extends Component implements Listener {
                     velocity.add(vehicle.getVelocity().multiply(2.5).add(new Vector(0,.5,0)));
                 }
 
+            } else continue;
+            
+            if(effects) {
+                Location vehicleLoc = vehicle.getLocation();
+                Experimental.createEffect(ParticleEffectType.LAVA, "", vehicleLoc, 0.5f, 0.5f, 5f, 20);
+                vehicleLoc.getWorld().playEffect(vehicleLoc, Effect.ZOMBIE_DESTROY_DOOR, 0);
             }
         }
     }

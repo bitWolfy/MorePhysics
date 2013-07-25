@@ -24,31 +24,37 @@ import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.wolvencraft.morephysics.components.BoatComponent;
-import com.wolvencraft.morephysics.components.MinecartComponent;
-import com.wolvencraft.morephysics.components.WeightComponent;
+import com.wolvencraft.morephysics.util.Experimental;
 import com.wolvencraft.morephysics.util.Message;
 
 public class MorePhysics extends JavaPlugin {
     
     private static MorePhysics instance;
+    private static ComponentManager componentManager;
         
     @Override
     public void onEnable() {
         instance = this;
         
+        Message.log(
+                "+--------------- [ MorePhysics ] ---------------+",
+                "| [X] Enabling MorePhysics v." + Message.fillString(this.getDescription().getVersion(), 19) + "|");
+        
         if(!new File(getDataFolder(), "config.yml").exists()) {
+            Message.log(
+                    "|  |- config.yml not found, copying it over     |",
+                    "|     for you                                   |");
             getConfig().options().copyDefaults(true);
             saveConfig();
         }
         
         Configuration.clearCache();
+        componentManager = new ComponentManager();
         
-        new MinecartComponent();
-        new BoatComponent();
-        new WeightComponent();
-        
-        Message.log("MorePhysics version " + this.getDescription().getVersion() + " is enabled!" );
+        Message.log(
+                "| [X] MorePhysics is enabled                    |",
+                "+-----------------------------------------------+"
+                );
     }
     
     @Override
@@ -56,7 +62,10 @@ public class MorePhysics extends JavaPlugin {
         Message.log("MorePhysics version " + this.getDescription().getVersion() + " is disabled!" );
         
         Configuration.clearCache();
+        componentManager.disable();
+        
         instance = null;
+        componentManager = null;
     }
     
     /**
@@ -65,5 +74,22 @@ public class MorePhysics extends JavaPlugin {
      */
     public static MorePhysics getInstance() {
         return instance;
+    }
+    
+    /**
+     * Returns the component manager instance
+     * @return Component manager instance
+     */
+    public static ComponentManager getComponentManager() {
+        return componentManager;
+    }
+    
+    /**
+     * Checks whether the plugin is CraftBukkit compatible
+     * @return <b>true</b> if CB versions match, <b>false</b> otherwise
+     */
+    public static boolean isCraftBukkitCompatible() {
+        try { return Experimental.craftBukkitCompatible(); }
+        catch(Throwable t) { return false; }
     }
 }

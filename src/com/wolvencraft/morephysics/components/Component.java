@@ -22,7 +22,7 @@ package com.wolvencraft.morephysics.components;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
+import com.wolvencraft.morephysics.ComponentManager.ComponentType;
 import com.wolvencraft.morephysics.MorePhysics;
 
 import lombok.AccessLevel;
@@ -31,18 +31,41 @@ import lombok.Getter;
 @Getter(AccessLevel.PUBLIC)
 public abstract class Component {
     
+    protected ComponentType type;
+    
     protected boolean enabled;
     protected String permission;
     
-    public Component(PluginComponent componentKey) {
+    public Component(ComponentType type) {
+        this.type = type;
+        
         FileConfiguration configFile = MorePhysics.getInstance().getConfig();
-        enabled = configFile.getBoolean(componentKey.getConfigKey() + ".enabled");
-        permission = configFile.getString(componentKey.getConfigKey() + ".permission");
+        enabled = configFile.getBoolean(type.getConfigKey() + ".enabled");
+        permission = type.getPermission();
     }
     
     /**
-     * Actions executed when the component is being enabled
+     * Component enabling routine
      */
-    public void disable() { }
+    public final void enable() {
+        onEnable();
+    }
+    
+    /**
+     * Actions performed when the component is being enabled
+     */
+    public void onEnable() { }
+    
+    /**
+     * Component disabling routine
+     */
+    public final void disable() {
+        
+    }
+    
+    /**
+     * Actions performed when the component is being disabled
+     */
+    public void onDisable() { }
     
 }
