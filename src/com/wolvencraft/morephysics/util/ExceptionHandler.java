@@ -1,8 +1,8 @@
 /*
  * ExceptionHandler.java
  * 
- * Statistics
- * Copyright (C) 2013 bitWolfy <http://www.wolvencraft.com> and contributors
+ * MorePhysics
+ * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,8 +51,8 @@ public class ExceptionHandler {
         
         PluginDescriptionFile description = MorePhysics.getInstance().getDescription();
         Message.log(
-                "+-------------- [ Statistics ] --------------+",
-                "| The plugin 'Statistics' has caused an error.",
+                "+--------------- [ MorePhysics ] ---------------+",
+                "| The plugin 'MorePhysics' has caused an error.",
                 "| Please, create a new ticket with this error at",
                 "| " + description.getWebsite(),
                 "| ",
@@ -61,7 +61,7 @@ public class ExceptionHandler {
                 "| Version  : " + description.getVersion(),
                 "| Error    : " + t.getClass().getName(),
                 "|            " + t.getLocalizedMessage(),
-                "+--------------------------------------------+",
+                "+-----------------------------------------------+",
                 "| The stack trace of the error follows: ",
                 "| ",
                 "| " + t.getClass().getName()
@@ -70,9 +70,9 @@ public class ExceptionHandler {
             Message.log("| at " + element.toString());
         }
         Message.log(
-                "| Multiple errors might have occurred, only",
-                "| one stack trace is shown.",
-                "+--------------------------------------------+"
+                "| Multiple errors might have occurred, only one",
+                "| stack trace is shown.",
+                "+-----------------------------------------------+"
                 );
     }
     

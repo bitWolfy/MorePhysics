@@ -36,7 +36,7 @@ pistons:
     permission: 'morephysics.exempt.pistons'
 weight:
     enabled: true
-    modifier: 0.01
+    multiplyer: 0.01
     permission: 'morephysics.exempt.weight'
 misc:
     debug: false

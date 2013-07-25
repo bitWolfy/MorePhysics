@@ -33,26 +33,35 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import com.wolvencraft.morephysics.MorePhysics;
 import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
 import com.wolvencraft.morephysics.util.Message;
-import com.wolvencraft.morephysics.util.BlockUtil;
+import com.wolvencraft.morephysics.util.Util;
 
+/**
+ * Weight component.
+ * 
+ * Handles inventory weight and its impact on player
+ * @author bitWolfy
+ *
+ */
 public class WeightComponent extends Component implements Listener {
     
-    private static Map<MaterialData, Double> weightMap;
+    private Map<MaterialData, Double> weightMap;
+    private double defaultWeight;
+    private double speedMultiplyer;
     
-    private static FileConfiguration weightData = null;
-    private static File weightDataFile = null;
+    private FileConfiguration weightData = null;
+    private File weightDataFile = null;
     
     public WeightComponent() {
         super(PluginComponent.WEIGHT);
@@ -71,51 +80,34 @@ public class WeightComponent extends Component implements Listener {
         for(String raw : getWeightData().getStringList("blocks")) {
             String[] data = raw.split(",");
             if(data.length != 2) continue;
-            try { weightMap.put(BlockUtil.getBlockMaterial(data[0]), Double.parseDouble(data[1])); }
+            try { weightMap.put(Util.getBlockMaterial(data[0]), Double.parseDouble(data[1])); }
             catch (NumberFormatException nfe) { continue; }
             catch (Exception ex) { continue; }
         }
+        
+        defaultWeight = getWeightData().getDouble("general.default");
+        speedMultiplyer = MorePhysics.getInstance().getConfig().getDouble("weight.multiplyer");
     }
     
     /**
-     * Returns the player weight.
-     * @param player Player to evaluate
-     * @return <b>double</b> weight
+     * Processes player weight
+     * @param player Player to process
      */
-    public static double get(Player player) {
+    public double getPlayerWeight(Player player) {
         PlayerInventory inventory = player.getInventory();
-        double totalWeight = get(inventory);
-        for(ItemStack armor : inventory.getArmorContents())
-            totalWeight += get(armor);
-        return totalWeight;
-    }
-    
-    /**
-     * Returns the weight of a player inventory.<br />
-     * Armor weight is <b>not</b> included.
-     * @param inventory Inventory to evaluate
-     * @return <b>double</b> weight
-     */
-    public static double get(PlayerInventory inventory) {
+        
         double totalWeight = 0;
         ListIterator<ItemStack> it = inventory.iterator();
         while(it.hasNext()) {
             ItemStack curItem = (ItemStack) it.next();
-            totalWeight += get(curItem);
+            totalWeight += getStackWeight(curItem);
             it.remove();
         }
-        return totalWeight;
-    }
-    
-    /**
-     * Returns the weight of several item stacks.<br />
-     * Most often used to measure the weight of player armor.
-     * @param items Items to evaluate
-     * @return <b>double</b> weight
-     */
-    public static double get(ItemStack[] items) {
-        int totalWeight = 0;
-        for(ItemStack item : items) totalWeight += get(item);
+        
+        for(ItemStack armor : inventory.getArmorContents()) totalWeight += getStackWeight(armor);
+        
+        player.setMetadata("weight", new FixedMetadataValue(MorePhysics.getInstance(), totalWeight));
+        
         return totalWeight;
     }
     
@@ -124,8 +116,8 @@ public class WeightComponent extends Component implements Listener {
      * @param stack Item stack to evaluate
      * @return <b>double</b> weight
      */
-    public static double get(ItemStack stack) {
-        double blockWeight = get(stack.getData());
+    private double getStackWeight(ItemStack stack) {
+        double blockWeight = getMaterialWeight(stack.getData());
         return blockWeight * stack.getAmount();
     }
     
@@ -134,11 +126,15 @@ public class WeightComponent extends Component implements Listener {
      * @param material Item type to evaluate
      * @return <b>double</b> weight
      */
-    public static double get(MaterialData material) {
-        return weightMap.get(material).doubleValue();
+    private double getMaterialWeight(MaterialData material) {
+        if(weightMap.containsKey(material)) return weightMap.get(material).doubleValue();
+        else return defaultWeight;
     }
     
-    private static void reloadWeightData() {        
+    /**
+     * Reloads the weight configuration from file
+     */
+    private void reloadWeightData() {        
         if (weightDataFile == null) weightDataFile = new File(MorePhysics.getInstance().getDataFolder(), "english.yml");
         weightData = YamlConfiguration.loadConfiguration(weightDataFile);
         
@@ -149,12 +145,19 @@ public class WeightComponent extends Component implements Listener {
         }
     }
     
-    public static FileConfiguration getWeightData() {
+    /**
+     * Returns the weight configuration file
+     * @return Weight configuration file
+     */
+    private FileConfiguration getWeightData() {
         if (weightData == null) reloadWeightData();
         return weightData;
     }
     
-    private static void saveWeightData() {
+    /**
+     * Saves the weight configuration to file
+     */
+    private void saveWeightData() {
         if (weightData == null || weightDataFile == null) return;
         try { weightData.save(weightDataFile); }
         catch (IOException ex) { Message.log(Level.SEVERE, "Could not save config to " + weightDataFile); }
@@ -165,6 +168,7 @@ public class WeightComponent extends Component implements Listener {
         Player player = event.getPlayer();
         if(player.hasPermission(permission)) return;
         
+        setPlayerSpeed(player, getPlayerWeight(player));
     }
     
     @EventHandler
@@ -172,13 +176,38 @@ public class WeightComponent extends Component implements Listener {
         Player player = (Player) event.getPlayer();
         if(player.hasPermission(permission)) return;
         
+        setPlayerSpeed(player, getPlayerWeight(player));
     }
-    
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
+
+    @EventHandler
+    public void onItemPickup(PlayerPickupItemEvent event) {
+        Player player = (Player) event.getPlayer();
         if(player.hasPermission(permission)) return;
         
+        setPlayerSpeed(player, getPlayerWeight(player));
+    }
+    
+    /**
+     * Returns the default player speed on this server
+     * @return Default player speed
+     */
+    public float getDefaultPlayerSpeed() {
+        return 0.2f;
+    }
+    
+    /**
+     * Sets the player speed
+     * @param player Player to process
+     * @param weight Inventory weight
+     */
+    public void setPlayerSpeed(Player player, double weight) {
+        player.setWalkSpeed(getDefaultPlayerSpeed());
+        
+        float speed = getDefaultPlayerSpeed() - (float) (weight * this.speedMultiplyer);
+        if(speed <= 0) speed = 0.01f;
+        else if(speed > 1) speed = 1f;
+        
+        player.setWalkSpeed(speed);
     }
     
 }

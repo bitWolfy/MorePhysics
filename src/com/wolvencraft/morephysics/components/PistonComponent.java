@@ -1,3 +1,23 @@
+/*
+ * PistonComponent.java
+ * 
+ * MorePhysics
+ * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package com.wolvencraft.morephysics.components;
 
 import java.util.Collections;
@@ -5,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -19,8 +40,14 @@ import org.bukkit.util.Vector;
 
 import com.wolvencraft.morephysics.MorePhysics;
 import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
-import com.wolvencraft.morephysics.util.PhysicsUtil;
 
+/**
+ * Piston component.
+ * 
+ * Handles pistons pushing players and mobs
+ * @author bitWolfy
+ *
+ */
 public class PistonComponent extends Component implements Listener {
     
     private boolean calculatePlayerWeight;
@@ -66,7 +93,7 @@ public class PistonComponent extends Component implements Listener {
         velocity.multiply(LaunchPower.ENTITIES.power);
         
         for(Entity pushedEntity : event.getBlock().getChunk().getEntities()) {
-            if(!PhysicsUtil.isEntityNearby(pushedEntity, pushedBlock.getLocation())) continue;
+            if(!isEntityNearby(pushedEntity, pushedBlock.getLocation())) continue;
             
             Vector entityVelocity = pushedEntity.getVelocity().clone();
             
@@ -91,6 +118,19 @@ public class PistonComponent extends Component implements Listener {
             player.sendBlockChange(block.getLocation(), 0, (byte) 0);
             player.sendBlockChange(block.getLocation().add(add), 0, (byte) 0);
         }
+    }
+    
+    /**
+     * Checks if the entity is roughly near the location.<br />
+     * Near is defined as 1 block away from the location.
+     * @param entity Entity to check
+     * @param location Location to check
+     * @return <b>true</b> if the entity is near the location, <b>false</b> otherwise
+     */
+    public boolean isEntityNearby(Entity entity, Location location) {
+        Location entityLoc = entity.getLocation();
+        return entityLoc.distanceSquared(location) <= 1
+                || entityLoc.clone().add(0, 1, 0).distanceSquared(location) <= 1;
     }
     
     public static class LaunchedBlock implements Runnable {

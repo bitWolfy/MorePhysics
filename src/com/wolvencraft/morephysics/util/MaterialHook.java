@@ -2,7 +2,7 @@
  * MaterialHook.java
  * 
  * MorePhysics
- * Copyright (C) 2013 bitWolfy <http://www.wolvencraft.com> and contributors
+ * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,11 @@ package com.wolvencraft.morephysics.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Simple bruteforce-like solution to having multiple names for a block
+ * @author bitWolfy
+ *
+ */
 public enum MaterialHook {
     CAKE_BLOCK ("cake_block", "cake_block", "cake"),
     COAL_ORE ("coal_ore", "coalore", "coal"),

@@ -1,5 +1,5 @@
 /*
- * BlockUtil.java
+ * Util.java
  * 
  * MorePhysics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
@@ -32,7 +32,7 @@ import org.bukkit.material.MaterialData;
  *
  */
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
-public class BlockUtil {
+public class Util {
     
     /**
      * Takes in <b>MaterialData</b> and returns a user-friendly name.<br />
