@@ -20,9 +20,6 @@
 
 package com.wolvencraft.morephysics.components;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -37,11 +34,13 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.wolvencraft.morephysics.MorePhysics;
@@ -56,8 +55,6 @@ import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
  */
 public class MinecartComponent extends Component implements Listener {
     
-    private List<String> hitPlayers;
-    
     private double minSpeedSquared;
     private String deathMessage;
     
@@ -71,10 +68,10 @@ public class MinecartComponent extends Component implements Listener {
         minSpeedSquared = Math.pow(configFile.getDouble("minecarts.min-detected-speed"), 2);
         deathMessage = configFile.getString("minecarts.death-message");
         
-        hitPlayers = new ArrayList<String>();
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
     }
     
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onMinecartMove(VehicleMoveEvent event) {
         Vehicle vehicle = event.getVehicle();
@@ -93,55 +90,97 @@ public class MinecartComponent extends Component implements Listener {
             Location loc = victimEntity.getLocation();
             if(loc.distanceSquared(event.getTo()) > loc.distanceSquared(event.getFrom())) continue;
             
-            Vector velocity = victimEntity.getVelocity();
                 
             if(victimEntity instanceof Player) {
-                Player victim = (Player) victimEntity;
+                final Player victim = (Player) victimEntity;
+                
+                // Process permissions
                 if(victim.hasPermission(permission)) continue;
+                
+                // Process damage handling
                 int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.PLAYERS.modifier));
-                EntityDamageEvent damage = new EntityDamageEvent(victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
+                EntityDamageEvent damage = new EntityDamageByEntityEvent(vehicle, victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
                 Bukkit.getPluginManager().callEvent(damage);
                 if(damage.isCancelled()) continue;
                 victim.damage(damageValue);
-                if(damageValue < victim.getHealth()) continue;
-                hitPlayers.add(victim.getName());
-                velocity.add(vehicle.getVelocity().multiply(2.5).add(new Vector(0,.5,0)));
                 
-                if(MinecartModifier.PLAYERS.knockback) victimEntity.setVelocity(velocity);
+                // Process death message handling
+                victim.setMetadata("hitbyminecart", new FixedMetadataValue(MorePhysics.getInstance(), true));
+                
+                Bukkit.getScheduler().runTaskLater(MorePhysics.getInstance(), new Runnable() {
+                    
+                    @Override
+                    public void run() {
+                        if(!victim.hasMetadata("hitbyminecart")
+                                || (victim.hasMetadata("hitbyminecart")
+                                        && !victim.getMetadata("hitbyminecart").get(0).asBoolean())) return;
+                        
+                        victim.removeMetadata("hitbyminecart", MorePhysics.getInstance());
+                    }
+                    
+                }, 20L);
+                
+                // Process knockback
+                if(MinecartModifier.PLAYERS.knockback) {
+                    Vector velocity = victimEntity.getVelocity().clone();
+                    velocity.add(vehicle.getVelocity().multiply(2.5).add(new Vector(0,.5,0)));
+                    victimEntity.setVelocity(velocity);
+                }
+                
             } else if(victimEntity instanceof Animals) {
+                // Process damage
                 int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.ANIMALS.modifier));
-                EntityDamageEvent damage = new EntityDamageEvent(victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
+                EntityDamageEvent damage = new EntityDamageByEntityEvent(vehicle, victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
                 Bukkit.getPluginManager().callEvent(damage);
+                if(damage.isCancelled()) continue;
                 victimEntity.damage(damageValue);
-                velocity.add(vehicle.getVelocity().multiply(2.5).add(new Vector(0,.5,0)));
+                
+                // Process knockback
+                if(MinecartModifier.ANIMALS.knockback) {
+                    Vector velocity = victimEntity.getVelocity().clone();
+                    victimEntity.setVelocity(velocity);
+                    velocity.add(vehicle.getVelocity().multiply(2.5).add(new Vector(0,.5,0)));
+                }
 
-                if(MinecartModifier.ANIMALS.knockback) victimEntity.setVelocity(velocity);
             } else if(victimEntity instanceof Monster || victimEntity instanceof Slime) {
+                // Process damage
                 int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.MOBS.modifier));
-                EntityDamageEvent damage = new EntityDamageEvent(victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
+                EntityDamageEvent damage = new EntityDamageByEntityEvent(vehicle, victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
                 Bukkit.getPluginManager().callEvent(damage);
+                if(damage.isCancelled()) continue;
                 victimEntity.damage(damageValue);
-                velocity.add(vehicle.getVelocity().multiply(2.5).add(new Vector(0,.5,0)));
+                
+                // Process knockback
+                if(MinecartModifier.MOBS.knockback) {
+                    Vector velocity = victimEntity.getVelocity().clone();
+                    victimEntity.setVelocity(velocity);
+                    velocity.add(vehicle.getVelocity().multiply(2.5).add(new Vector(0,.5,0)));
+                }
 
-                if(MinecartModifier.MOBS.knockback) victimEntity.setVelocity(velocity);
             }
         }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        Player p = event.getEntity();
-        if(hitPlayers.contains(p.getName())) {
-            event.setDeathMessage(deathMessage.replaceAll("<PLAYER>", p.getName()));
-            hitPlayers.remove(p.getName());
-        }
+        Player player = event.getEntity();
+        if(!player.hasMetadata("hitbyminecart")
+                || (player.hasMetadata("hitbyminecart")
+                        && !player.getMetadata("hitbyminecart").get(0).asBoolean())) return;
         
+        event.setDeathMessage(deathMessage.replaceAll("<PLAYER>", player.getName()));
+        
+        player.removeMetadata("hitbyminecart", MorePhysics.getInstance());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerLeave(PlayerQuitEvent event) {
-        if(hitPlayers.contains(event.getPlayer().getName()))
-            hitPlayers.remove(event.getPlayer().getName());
+        Player player = event.getPlayer();
+        if(!player.hasMetadata("hitbyminecart")
+                || (player.hasMetadata("hitbyminecart")
+                        && !player.getMetadata("hitbyminecart").get(0).asBoolean())) return;
+        
+        player.removeMetadata("hitbyminecart", MorePhysics.getInstance());
     }
     
     private enum MinecartModifier {

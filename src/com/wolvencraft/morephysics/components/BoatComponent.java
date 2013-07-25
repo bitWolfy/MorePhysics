@@ -20,9 +20,6 @@
 
 package com.wolvencraft.morephysics.components;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Boat;
@@ -35,6 +32,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.wolvencraft.morephysics.MorePhysics;
@@ -49,13 +47,10 @@ import com.wolvencraft.morephysics.ComponentManager.PluginComponent;
  */
 public class BoatComponent extends Component implements Listener {
     
-    private List<Boat> sinkingBoats;
-    
     public BoatComponent() {
         super(PluginComponent.BOAT);
         
         if(!enabled) return;
-        sinkingBoats = new ArrayList<Boat>();
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
     }
     
@@ -67,24 +62,24 @@ public class BoatComponent extends Component implements Listener {
         Entity passenger = boat.getPassenger();
         if (passenger == null || (passenger != null && ((Player) passenger).hasPermission(permission))) return;
         
-        if(!sinkingBoats.contains(boat) && !boat.isDead() && (event.getDamage() >= 2)) {
-            sinkingBoats.add(boat);
+        if(!boat.hasMetadata("sinking") && !boat.isDead() && (event.getDamage() >= 2)) {
+            boat.setMetadata("sinking", new FixedMetadataValue(MorePhysics.getInstance(), true));
             boat.setVelocity(boat.getVelocity().subtract(new Vector(0,.05,0)));
         }
     }
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBoatDestroy(VehicleDestroyEvent event) {
-        if(event.getVehicle() instanceof Boat && sinkingBoats.contains((Boat) event.getVehicle()))
-            sinkingBoats.remove((Boat) event.getVehicle());        
+        Vehicle vehicle = event.getVehicle();
+        if(vehicle instanceof Boat && vehicle.hasMetadata("sinking"))
+            vehicle.removeMetadata("sinking", MorePhysics.getInstance());     
     }
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBoatMove(VehicleMoveEvent event) {
         Vehicle vehicle = event.getVehicle();
         
-        if(!(vehicle instanceof Boat)
-                || !(sinkingBoats.contains((Boat) vehicle))) return;
+        if(!(vehicle instanceof Boat) || !vehicle.hasMetadata("sinking")) return;
         
         Entity passenger = vehicle.getPassenger();
         if (passenger == null || (passenger != null && ((Player) passenger).hasPermission(permission))) return;
