@@ -33,6 +33,7 @@ import com.wolvencraft.morephysics.components.BoatComponent;
 import com.wolvencraft.morephysics.components.Component;
 import com.wolvencraft.morephysics.components.MinecartComponent;
 import com.wolvencraft.morephysics.components.PistonComponent;
+import com.wolvencraft.morephysics.components.PlayerComponent;
 import com.wolvencraft.morephysics.components.WeightComponent;
 import com.wolvencraft.morephysics.util.ExceptionHandler;
 import com.wolvencraft.morephysics.util.Message;
@@ -99,6 +100,7 @@ public class ComponentManager {
         BOAT            ("boats", BoatComponent.class, "morephysics.boats"),
         MINECART        ("minecarts", MinecartComponent.class, "morephysics.minecarts"),
         PISTON          ("pistons", PistonComponent.class, "morephysics.pistons"),
+        PLAYER          ("player", PlayerComponent.class, "morephysics.player"),
         WEIGHT          ("weight", WeightComponent.class, "morephysics.weight"),
         ;
 

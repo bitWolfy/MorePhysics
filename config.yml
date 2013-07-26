@@ -41,6 +41,21 @@ pistons:
         entities: 4.0
         blocks: 3.0
     effects: true
+player:
+    enabled: true
+    modifiers:
+        rates:
+            hunger: 1.0
+            experience: 1.0
+        damage:
+            pvp: 1.0
+            pve: 1.0
+            fire: 1.0
+            suffocation: 1.0
+            starvation: 1.0
+            poison: 1.0
+            fall: 1.0
+            explosion: 1.0
 weight:
     enabled: true
     speed-modifier: 0.0001
