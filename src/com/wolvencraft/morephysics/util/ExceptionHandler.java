@@ -46,8 +46,12 @@ public class ExceptionHandler {
     public static void handle(Throwable t, boolean debug) {
         if(debug && !Configuration.Debug.toBoolean()) return;
         
-        if(t.getLocalizedMessage().equalsIgnoreCase(lastError)) return;
-        else lastError = t.getClass().getName();
+        if(lastError == null) lastError = t.getClass().getName();
+        
+        if(t != null && t.getLocalizedMessage() != null) {
+            if(t.getLocalizedMessage().equalsIgnoreCase(lastError)) return;
+            else lastError = t.getClass().getName();
+        }
         
         PluginDescriptionFile description = MorePhysics.getInstance().getDescription();
         Message.log(

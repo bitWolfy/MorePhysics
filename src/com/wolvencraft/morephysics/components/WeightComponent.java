@@ -76,7 +76,8 @@ public class WeightComponent extends Component implements Listener {
         defaultWeight = getWeightData().getDouble("general.default");
         
         FileConfiguration configFile = MorePhysics.getInstance().getConfig();
-        speedMultiplyer = configFile.getDouble("weight.multiplyer");
+        
+        speedMultiplyer = configFile.getDouble("weight.speed-modifier");
         exemptCreative = configFile.getBoolean("weight.exempt-creative");
     }
     
@@ -256,10 +257,9 @@ public class WeightComponent extends Component implements Listener {
     public void setPlayerSpeed(Player player, double weight) {
         player.setWalkSpeed(getDefaultPlayerSpeed());
         
-        float speed = getDefaultPlayerSpeed() - (float) (weight * this.speedMultiplyer);
+        float speed = (float) (getDefaultPlayerSpeed() - (weight * this.speedMultiplyer));
         if(speed <= 0) speed = 0.01f;
         else if(speed > 1) speed = 1f;
-        
         player.setWalkSpeed(speed);
     }
     
