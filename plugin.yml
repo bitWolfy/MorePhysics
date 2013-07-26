@@ -1,7 +1,7 @@
 name: MorePhysics
 main: com.wolvencraft.morephysics.MorePhysics
 website: http://dev.bukkit.org/bukkit-plugins/morephysics/
-version: 2.4.0
+version: 2.3.0
 authors: [FriedTaco, bitWolfy]
 permissions:
     morephysics.*:
