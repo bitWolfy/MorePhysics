@@ -36,7 +36,10 @@ minecarts:
     effects: true
 pistons:
     enabled: true
-    calculate-player-weight: true
+    sign-controlled: false
+    weight:
+        enabled: true
+        modifier: 0.001
     power:
         entities: 4.0
         blocks: 3.0
