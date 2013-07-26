@@ -77,7 +77,7 @@ public class Message {
      * @param message Message to be sent
      */
     public static void sendFormattedError(CommandSender sender, String message) {
-        sendFormatted(sender, ChatColor.DARK_RED, Configuration.LogPrefix.toString(), message);
+        sendFormatted(sender, ChatColor.DARK_RED, Configuration.Prefix.toString(), message);
     }
     
     /**
@@ -86,7 +86,7 @@ public class Message {
      */
     public static void broadcast(String message) {
         for (Player p : Bukkit.getServer().getOnlinePlayers())
-            sendFormatted(p, ChatColor.DARK_GREEN, Configuration.LogPrefix.toString(), message);
+            sendFormatted(p, ChatColor.DARK_GREEN, Configuration.Prefix.toString(), message);
         log(parseChatColors(message));
     }
     

@@ -31,7 +31,7 @@ import com.wolvencraft.morephysics.util.ExceptionHandler;
 public enum Configuration {
     
     Debug               ("misc.debug"),
-    LogPrefix           ("misc.log-prefix"),
+    Prefix              ("misc.prefix"),
     ;
     
     private String node;

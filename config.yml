@@ -65,4 +65,4 @@ weight:
     exempt-creative: true
 misc:
     debug: false
-    log-prefix: "[MorePhysics]"
+    prefix: "[MorePhysics]"

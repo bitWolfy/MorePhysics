@@ -191,7 +191,7 @@ public class PistonComponent extends Component implements Listener {
             Block relBlock = block.getRelative(direction);
             if(!(relBlock instanceof Sign)) continue;
             Sign sign = (Sign) relBlock;
-            if(sign.getLine(0).equalsIgnoreCase(Configuration.LogPrefix.toString())
+            if(sign.getLine(0).equalsIgnoreCase(Configuration.Prefix.toString())
                     && sign.getLine(1).equalsIgnoreCase("piston")) return true;
         }
         return false;
