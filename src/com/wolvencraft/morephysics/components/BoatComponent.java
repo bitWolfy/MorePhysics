@@ -82,11 +82,13 @@ public class BoatComponent extends Component implements Listener {
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBoatDamage(VehicleDamageEvent event) {
+        if(exemptWorlds.contains(event.getVehicle().getWorld().getName())) return;
+        
         if(!(event.getVehicle() instanceof Boat)) return;
         
         Boat boat = (Boat) event.getVehicle();
         Entity passenger = boat.getPassenger();
-        if (passenger == null || (passenger != null && !((Player) passenger).hasPermission(permission))) return;
+        if (passenger == null || (passenger != null && !((Player) passenger).hasPermission(type.getPermission()))) return;
         
         if(!boat.hasMetadata("sinking") && !boat.isDead() && (event.getDamage() >= 2)) {
             boat.setMetadata("sinking", new FixedMetadataValue(MorePhysics.getInstance(), true));
@@ -98,6 +100,8 @@ public class BoatComponent extends Component implements Listener {
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBoatDestroy(VehicleDestroyEvent event) {
+        if(exemptWorlds.contains(event.getVehicle().getWorld().getName())) return;
+        
         Vehicle vehicle = event.getVehicle();
         if(vehicle instanceof Boat && vehicle.hasMetadata("sinking"))
             vehicle.removeMetadata("sinking", MorePhysics.getInstance());     
@@ -107,10 +111,12 @@ public class BoatComponent extends Component implements Listener {
     public void onBoatMove(VehicleMoveEvent event) {
         Vehicle vehicle = event.getVehicle();
         
+        if(exemptWorlds.contains(vehicle.getWorld().getName())) return;
+        
         if(!(vehicle instanceof Boat) || !vehicle.hasMetadata("sinking")) return;
         
         Entity passenger = vehicle.getPassenger();
-        if (passenger == null || (passenger != null && !((Player) passenger).hasPermission(permission))) return;
+        if (passenger == null || (passenger != null && !((Player) passenger).hasPermission(type.getPermission()))) return;
         
         Material blockUnder = vehicle.getWorld().getBlockAt(event.getTo()).getRelative(0, -1, 0).getType();
         

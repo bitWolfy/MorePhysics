@@ -78,6 +78,9 @@ public class BloodComponent extends Component implements Listener {
     
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
+        
+        if(exemptWorlds.contains(event.getEntity().getWorld().getName())) return;
+        
         Entity entity = event.getEntity();
         if(entity instanceof Player) {
             Experimental.createBlockEffect(entity.getLocation(), BloodModifier.PLAYERS.color.blockId);

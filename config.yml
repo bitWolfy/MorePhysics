@@ -1,5 +1,6 @@
 arrows:
     enabled: true
+    exempt-worlds: []
     modifiers:
         head: 3
         neck: 4
@@ -11,16 +12,19 @@ arrows:
     effects: true
 blood:
     enabled: true
+    exempt-worlds: []
     modifiers:
         players-color: red
         mobs-color: green
         animals-color: red
 boats:
     enabled: true
+    exempt-worlds: []
     damage-multiplyer: 1.0
     effects: true
 minecarts:
     enabled: true
+    exempt-worlds: []
     min-detected-speed: 0.01
     modifiers:
         players:
@@ -36,6 +40,7 @@ minecarts:
     effects: true
 pistons:
     enabled: true
+    exempt-worlds: []
     sign-controlled: false
     weight:
         enabled: true
@@ -46,6 +51,7 @@ pistons:
     effects: true
 player:
     enabled: true
+    exempt-worlds: []
     modifiers:
         rates:
             hunger: 1.0
@@ -61,6 +67,7 @@ player:
             explosion: 1.0
 weight:
     enabled: true
+    exempt-worlds: []
     speed-modifier: 0.0001
     exempt-creative: true
 misc:

@@ -113,6 +113,74 @@ public class WeightComponent extends Component implements Listener {
         HandlerList.unregisterAll(this);
     }
     
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        if(exemptWorlds.contains(event.getPlayer().getWorld().getName())) return;
+        
+        Player player = event.getPlayer();
+        if(!player.hasPermission(type.getPermission())) return;
+        
+        setPlayerSpeed(player, getPlayerWeight(player));
+    }
+    
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        Player player = (Player) event.getPlayer();
+
+        if(exemptWorlds.contains(player.getWorld().getName())) return;
+        
+        if(!player.hasPermission(type.getPermission())
+                || (exemptCreative
+                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
+        
+        double weight = getPlayerWeight(player);
+        setPlayerSpeed(player, weight);
+        Message.debug(
+                "Player weight = " + weight,
+                "Setting speed to " + player.getWalkSpeed()
+                );
+    }
+    
+    @EventHandler
+    public void onItemPickup(PlayerPickupItemEvent event) {
+        Player player = (Player) event.getPlayer();
+        
+        if(exemptWorlds.contains(player.getWorld().getName())) return;
+        
+        if(!player.hasPermission(type.getPermission())
+                || (exemptCreative
+                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
+        
+        setPlayerSpeed(player, getPlayerWeight(player));
+        
+        double weight = getPlayerWeight(player);
+        setPlayerSpeed(player, weight);
+        Message.debug(
+                "Player weight = " + weight,
+                "Setting speed to " + player.getWalkSpeed()
+                );
+    }
+    
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent event) {
+        Player player = (Player) event.getPlayer();
+        
+        if(exemptWorlds.contains(player.getWorld().getName())) return;
+        
+        if(!player.hasPermission(type.getPermission())
+                || (exemptCreative
+                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
+        
+      setPlayerSpeed(player, getPlayerWeight(player));
+      
+      double weight = getPlayerWeight(player);
+      setPlayerSpeed(player, weight);
+      Message.debug(
+              "Player weight = " + weight,
+              "Setting speed to " + player.getWalkSpeed()
+              );
+    }
+    
     /**
      * Processes player weight
      * @param player Player to process
@@ -185,63 +253,6 @@ public class WeightComponent extends Component implements Listener {
         if (weightData == null || weightDataFile == null) return;
         try { weightData.save(weightDataFile); }
         catch (IOException ex) { Message.log(Level.SEVERE, "Could not save config to " + weightDataFile); }
-    }
-    
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-        if(!player.hasPermission(permission)) return;
-        
-        setPlayerSpeed(player, getPlayerWeight(player));
-    }
-    
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent event) {
-        Player player = (Player) event.getPlayer();
-        if(!player.hasPermission(permission)
-                || (exemptCreative
-                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
-        
-        double weight = getPlayerWeight(player);
-        setPlayerSpeed(player, weight);
-        Message.debug(
-                "Player weight = " + weight,
-                "Setting speed to " + player.getWalkSpeed()
-                );
-    }
-    
-    @EventHandler
-    public void onItemPickup(PlayerPickupItemEvent event) {
-        Player player = (Player) event.getPlayer();
-        if(!player.hasPermission(permission)
-                || (exemptCreative
-                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
-        
-        setPlayerSpeed(player, getPlayerWeight(player));
-        
-        double weight = getPlayerWeight(player);
-        setPlayerSpeed(player, weight);
-        Message.debug(
-                "Player weight = " + weight,
-                "Setting speed to " + player.getWalkSpeed()
-                );
-    }
-    
-    @EventHandler
-    public void onItemDrop(PlayerDropItemEvent event) {
-        Player player = (Player) event.getPlayer();
-        if(!player.hasPermission(permission)
-                || (exemptCreative
-                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
-        
-      setPlayerSpeed(player, getPlayerWeight(player));
-      
-      double weight = getPlayerWeight(player);
-      setPlayerSpeed(player, weight);
-      Message.debug(
-              "Player weight = " + weight,
-              "Setting speed to " + player.getWalkSpeed()
-              );
     }
     
     /**

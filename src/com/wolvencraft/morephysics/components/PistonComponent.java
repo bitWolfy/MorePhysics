@@ -99,6 +99,8 @@ public class PistonComponent extends Component implements Listener {
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void blocksPushedHandler(BlockPistonExtendEvent event) {
+        if(exemptWorlds.contains(event.getBlock().getWorld().getName())) return;
+        
         if(event.getBlocks().isEmpty() || LaunchPower.BLOCKS.power == 0.0) return;
         
         if(signControlled && !checkForSign(event.getBlock())) return;
@@ -123,6 +125,8 @@ public class PistonComponent extends Component implements Listener {
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void entitiesPushedHandler(BlockPistonExtendEvent event) {
+        if(exemptWorlds.contains(event.getBlock().getWorld().getName())) return;
+        
         if(LaunchPower.ENTITIES.power == 0.0) return;
 
         if(signControlled && !checkForSign(event.getBlock())) return;
@@ -138,7 +142,7 @@ public class PistonComponent extends Component implements Listener {
             Vector entityVelocity = pushedEntity.getVelocity().clone();
             
             if(pushedEntity instanceof Player) {
-                if(!((Player) pushedEntity).hasPermission(permission)) continue;
+                if(!((Player) pushedEntity).hasPermission(type.getPermission())) continue;
                 
                 if(calculatePlayerWeight && pushedEntity.hasMetadata("weight")) {
                     double weight = pushedEntity.getMetadata("weight").get(0).asDouble();

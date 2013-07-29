@@ -99,6 +99,8 @@ public class MinecartComponent extends Component implements Listener {
     public void onMinecartMove(VehicleMoveEvent event) {
         Vehicle vehicle = event.getVehicle();
         
+        if(exemptWorlds.contains(vehicle.getWorld().getName())) return;
+        
         if(!(vehicle instanceof Minecart)) return;
         
         if(vehicle.getVelocity().lengthSquared() <= minSpeedSquared) return;
@@ -118,7 +120,7 @@ public class MinecartComponent extends Component implements Listener {
                 final Player victim = (Player) victimEntity;
                 
                 // Process permissions
-                if(!victim.hasPermission(permission)) continue;
+                if(!victim.hasPermission(type.getPermission())) continue;
                 
                 // Process damage handling
                 int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.PLAYERS.modifier));

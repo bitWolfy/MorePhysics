@@ -77,7 +77,9 @@ public class ArrowComponent extends Component implements Listener {
     public void onEntityDamage(EntityDamageByEntityEvent event) {
         if(!(event.getDamager() instanceof Projectile)
             || !(event.getEntity() instanceof Player)
-            || !((Player) event.getEntity()).hasPermission(permission)) return;
+            || !((Player) event.getEntity()).hasPermission(type.getPermission())) return;
+        
+        if(exemptWorlds.contains(event.getEntity().getWorld().getName())) return;
         
         HitArea hitArea;
         

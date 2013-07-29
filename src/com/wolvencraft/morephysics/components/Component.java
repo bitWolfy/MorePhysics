@@ -20,6 +20,8 @@
 
 package com.wolvencraft.morephysics.components;
 
+import java.util.List;
+
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.wolvencraft.morephysics.ComponentManager.ComponentType;
@@ -34,14 +36,14 @@ public abstract class Component {
     protected ComponentType type;
     
     protected boolean enabled;
-    protected String permission;
+    protected List<String> exemptWorlds;
     
     public Component(ComponentType type) {
         this.type = type;
         
         FileConfiguration configFile = MorePhysics.getInstance().getConfig();
         enabled = configFile.getBoolean(type.getConfigKey() + ".enabled");
-        permission = type.getPermission();
+        exemptWorlds = configFile.getStringList(type.getConfigKey() + ".exempt-worlds");
     }
     
     /**

@@ -68,16 +68,22 @@ public class PlayerComponent extends Component implements Listener {
     
     @EventHandler
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
+        if(exemptWorlds.contains(event.getEntity().getWorld().getName())) return;
+        
         event.setFoodLevel((int) (event.getFoodLevel() * PlayerModifier.RATE_HUNGER.modifier));
     }
     
     @EventHandler
     public void onExperienceGain(PlayerExpChangeEvent event) {
+        if(exemptWorlds.contains(event.getPlayer().getWorld().getName())) return;
+        
         event.setAmount((int) (event.getAmount() * PlayerModifier.RATE_EXPERIENCE.modifier));
     }
     
     @EventHandler
     public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if(exemptWorlds.contains(event.getEntity().getWorld().getName())) return;
+        
         Entity damager = event.getDamager();
         if(damager instanceof Player) {
             event.setDamage(event.getDamage() * PlayerModifier.DAMAGE_PVP.modifier);
@@ -91,6 +97,8 @@ public class PlayerComponent extends Component implements Listener {
     
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
+        if(exemptWorlds.contains(event.getEntity().getWorld().getName())) return;
+        
         DamageCause cause = event.getCause();
         if(cause.equals(DamageCause.FIRE) || cause.equals(DamageCause.FIRE_TICK)) {
             event.setDamage(event.getDamage() * PlayerModifier.DAMAGE_FIRE.modifier);
