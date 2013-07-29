@@ -94,14 +94,17 @@ public class WeightComponent extends Component implements Listener {
         
         weightMap = new HashMap<MaterialData, Double>();
         
+        int count = 0;
         for(String raw : getWeightData().getStringList("blocks")) {
             String[] data = raw.split(",");
             if(data.length != 2) continue;
-            try { weightMap.put(Util.getBlockMaterial(data[0]), Double.parseDouble(data[1])); }
-            catch (NumberFormatException nfe) { continue; }
-            catch (Exception ex) { continue; }
+            try { 
+                weightMap.put(Util.getBlockMaterial(data[0]), Double.parseDouble(data[1]));
+                count++;
+            } catch(Throwable t) { continue; }
         }
         
+        Message.log("|  |- Loaded material weight: " + Message.fillString(count + " entries", 18) + "|");
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
     }
     

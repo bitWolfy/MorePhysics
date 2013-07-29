@@ -56,12 +56,12 @@ public class Util {
      * @return <b>MaterialData</b> if the block is valid, <b>null</b> otherwise
      */
     public static MaterialData getBlockMaterial(String blockName) {
-        Message.debug("Parsing block: " + blockName);
+        String[] parts = blockName.split(":");
+        if(parts.length > 2) return null;
+        
+        MaterialData block = null;
+        
         try {
-            String[] parts = blockName.split(":");
-            if(parts.length > 2) return null;
-            
-            MaterialData block;
             if(isNumeric(parts[0])) block = new MaterialData(Material.getMaterial(Integer.parseInt(parts[0])));
             else {
                 MaterialHook ore = MaterialHook.match(parts[0]);
@@ -75,13 +75,9 @@ public class Util {
                 if(!isNumeric(parts[1])) parts[1] = parseMetadata(parts, false);
                 block.setData(Byte.parseByte(parts[1]));
             }
-            
-            return block;
-            
-        }
-        catch(NumberFormatException nfe) { return null; }
-        catch(NullPointerException npe) { return null; }
-        catch(Exception ex) { return null; }
+        } catch(Throwable t) { return null; }
+        
+        return block;
     }
     
     /**
