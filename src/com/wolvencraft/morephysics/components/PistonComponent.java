@@ -97,6 +97,7 @@ public class PistonComponent extends Component implements Listener {
                     "|  |- WeightComponent is disabled - cannot      |",
                     "|  |  calculate player weight into velocity     |"
                     );
+            calculatePlayerWeight = false;
         }
         
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
