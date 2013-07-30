@@ -91,6 +91,14 @@ public class PistonComponent extends Component implements Listener {
             effects = false;
         }
         
+        if(calculatePlayerWeight
+                && MorePhysics.getComponentManager().isComponentEnabled(ComponentType.WEIGHT)) {
+            Message.log(
+                    "|  |- WeightComponent is disabled - cannot      |",
+                    "|  |  calculate player weight into velocity     |"
+                    );
+        }
+        
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
     }
     
@@ -176,7 +184,8 @@ public class PistonComponent extends Component implements Listener {
                 Player player = (Player) pushedEntity;
                 if(!player.hasPermission(type.getPermission())) continue;
                 
-                if(calculatePlayerWeight && player.hasPermission(ComponentType.WEIGHT.getPermission())) {
+                if(calculatePlayerWeight
+                        && player.hasPermission(ComponentType.WEIGHT.getPermission())) {
                     double weight = weightComponent.getPlayerWeight(player);
                     velocity.subtract(velocity.clone().multiply(weight * weightModifier));
                 }

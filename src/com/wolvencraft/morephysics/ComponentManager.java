@@ -59,20 +59,21 @@ public class ComponentManager {
         PluginMetrics metrics = MorePhysics.getStatistics().getMetrics();
         
         for(ComponentType component : ComponentType.values()) {
-            try {
-                Component componentObj = component.component.newInstance();
-                if(componentObj.isEnabled()) {
-                    Message.log("| [X] " + Message.fillString(component.component.getSimpleName() + " is enabled", 42) + "|");
-                    componentObj.enable();
-                } else
-                    Message.log("| [X] " + Message.fillString(component.component.getSimpleName() + " is not enabled", 42) + "|");
-                
-                if(metrics != null) componentObj.statsInit(metrics);
-                components.add(componentObj);
-            } catch(Throwable t) {
+            try { components.add(component.component.newInstance()); }
+            catch(Throwable t) {
                 ExceptionHandler.handle(t);
                 continue;
             }
+        }
+        
+        for(Component component : components) {
+            if(component.isEnabled()) {
+                Message.log("| [X] " + Message.fillString(component.getClass().getSimpleName() + " is enabled", 42) + "|");
+                component.enable();
+            } else
+                Message.log("| [X] " + Message.fillString(component.getClass().getSimpleName() + " is disabled", 42) + "|");
+            
+            if(metrics != null) component.statsInit(metrics);
         }
     }
     
@@ -97,6 +98,16 @@ public class ComponentManager {
             if(component.getType() == type) return component;
         }
         return null;
+    }
+    
+    /**
+     * Checks if the component is enabled
+     * @param type Component type
+     * @return <b>true</b> if the component is enabled, <b>false</b> otherwise
+     */
+    public boolean isComponentEnabled(ComponentType type) {
+        Component component = getComponent(type);
+        return component != null && component.isEnabled();
     }
     
     @AllArgsConstructor(access=AccessLevel.PUBLIC)
