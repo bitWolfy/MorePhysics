@@ -36,6 +36,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 
 import com.wolvencraft.morephysics.MorePhysics;
 import com.wolvencraft.morephysics.ComponentManager.ComponentType;
+import com.wolvencraft.morephysics.metrics.PluginMetrics;
+import com.wolvencraft.morephysics.metrics.PluginMetrics.Graph;
 import com.wolvencraft.morephysics.util.Experimental;
 import com.wolvencraft.morephysics.util.Message;
 
@@ -74,6 +76,31 @@ public class BloodComponent extends Component implements Listener {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
+    }
+    
+    @Override
+    public void statsInit(PluginMetrics metrics) {
+        Graph componentGraph = metrics.createGraph("Blood Component Enabled");
+        
+        componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
+
+            @Override
+            public int getValue() {
+                if(enabled) return 1;
+                else return 0;
+            }
+
+        });
+
+        componentGraph.addPlotter(new PluginMetrics.Plotter("Disabled") {
+
+            @Override
+            public int getValue() {
+                if(!enabled) return 1;
+                else return 0;
+            }
+
+        });
     }
     
     @EventHandler

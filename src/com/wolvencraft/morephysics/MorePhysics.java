@@ -24,12 +24,14 @@ import java.io.File;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.wolvencraft.morephysics.metrics.Statistics;
 import com.wolvencraft.morephysics.util.Experimental;
 import com.wolvencraft.morephysics.util.Message;
 
 public class MorePhysics extends JavaPlugin {
     
     private static MorePhysics instance;
+    private static Statistics metrics;
     private static ComponentManager componentManager;
         
     @Override
@@ -46,8 +48,12 @@ public class MorePhysics extends JavaPlugin {
             saveConfig();
         }
         
+        metrics = new Statistics(this);
+        
         Configuration.clearCache();
         componentManager = new ComponentManager();
+        
+        metrics.start();
         
         Message.log(
                 "| [X] MorePhysics is enabled                    |",
@@ -80,6 +86,14 @@ public class MorePhysics extends JavaPlugin {
      */
     public static ComponentManager getComponentManager() {
         return componentManager;
+    }
+    
+    /**
+     * Returns the statistics manager instance
+     * @return Statistics manager instance
+     */
+    public static Statistics getStatistics() {
+        return metrics;
     }
     
     /**

@@ -35,6 +35,7 @@ import com.wolvencraft.morephysics.components.MinecartComponent;
 import com.wolvencraft.morephysics.components.PistonComponent;
 import com.wolvencraft.morephysics.components.PlayerComponent;
 import com.wolvencraft.morephysics.components.WeightComponent;
+import com.wolvencraft.morephysics.metrics.PluginMetrics;
 import com.wolvencraft.morephysics.util.ExceptionHandler;
 import com.wolvencraft.morephysics.util.Message;
 
@@ -49,6 +50,7 @@ public class ComponentManager {
     
     public ComponentManager() {
         components = new ArrayList<Component>();
+        PluginMetrics metrics = MorePhysics.getStatistics().getMetrics();
         
         for(ComponentType component : ComponentType.values()) {
             try {
@@ -59,7 +61,7 @@ public class ComponentManager {
                 } else
                     Message.log("| [X] " + Message.fillString(component.component.getSimpleName() + " is not enabled", 42) + "|");
                 
-                
+                if(metrics != null) componentObj.statsInit(metrics);
                 components.add(componentObj);
             } catch(Throwable t) {
                 ExceptionHandler.handle(t);

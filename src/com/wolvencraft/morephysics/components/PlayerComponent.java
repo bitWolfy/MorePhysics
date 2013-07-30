@@ -38,6 +38,8 @@ import org.bukkit.event.player.PlayerExpChangeEvent;
 
 import com.wolvencraft.morephysics.MorePhysics;
 import com.wolvencraft.morephysics.ComponentManager.ComponentType;
+import com.wolvencraft.morephysics.metrics.PluginMetrics;
+import com.wolvencraft.morephysics.metrics.PluginMetrics.Graph;
 
 /**
  * Player component.
@@ -64,6 +66,31 @@ public class PlayerComponent extends Component implements Listener {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
+    }
+    
+    @Override
+    public void statsInit(PluginMetrics metrics) {
+        Graph componentGraph = metrics.createGraph("Player Component Enabled");
+        
+        componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
+
+            @Override
+            public int getValue() {
+                if(enabled) return 1;
+                else return 0;
+            }
+
+        });
+
+        componentGraph.addPlotter(new PluginMetrics.Plotter("Disabled") {
+
+            @Override
+            public int getValue() {
+                if(!enabled) return 1;
+                else return 0;
+            }
+
+        });
     }
     
     @EventHandler

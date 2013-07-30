@@ -26,6 +26,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import com.wolvencraft.morephysics.ComponentManager.ComponentType;
 import com.wolvencraft.morephysics.MorePhysics;
+import com.wolvencraft.morephysics.metrics.PluginMetrics;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -70,4 +71,10 @@ public abstract class Component {
      */
     public void onDisable() { }
     
+    /**
+     * Initializes the plugin statistic
+     */
+    public void statsInit(PluginMetrics metrics) {
+        
+    }
 }
