@@ -76,7 +76,7 @@ public class PistonComponent extends Component implements Listener {
         calculatePlayerWeight = configFile.getBoolean("pistons.weight.enabled");
         weightModifier = configFile.getDouble("pistons.weight.modifier");
         effects = configFile.getBoolean("pistons.effects");
-        effects = configFile.getBoolean("pistons.sign-controlled");
+        signControlled = configFile.getBoolean("pistons.sign-controlled");
     }
     
     @Override
@@ -84,7 +84,7 @@ public class PistonComponent extends Component implements Listener {
         if(effects && !MorePhysics.isCraftBukkitCompatible()) {
             Message.log(
                     "|  |- Particle effects are not compatible with  |",
-                    "|     your CraftBukkit version. Disabling...    |"
+                    "|  |  your CraftBukkit version. Disabling...    |"
                     );
             effects = false;
         }
@@ -130,11 +130,15 @@ public class PistonComponent extends Component implements Listener {
         if(LaunchPower.ENTITIES.power == 0.0) return;
 
         if(signControlled && !checkForSign(event.getBlock())) return;
-        
+
         BlockFace direction = event.getDirection();
         Block pushedBlock = event.getBlock().getRelative(event.getDirection());
         Vector velocity = new Vector(direction.getModX(), direction.getModY(), direction.getModZ());
         velocity.multiply(LaunchPower.ENTITIES.power);
+        
+        WeightComponent weightComponent = null;
+        if(calculatePlayerWeight)
+            weightComponent = (WeightComponent) MorePhysics.getComponentManager().getComponent(ComponentType.WEIGHT);
         
         for(Entity pushedEntity : event.getBlock().getChunk().getEntities()) {
             if(!isEntityNearby(pushedEntity, pushedBlock.getLocation())) continue;
@@ -142,10 +146,11 @@ public class PistonComponent extends Component implements Listener {
             Vector entityVelocity = pushedEntity.getVelocity().clone();
             
             if(pushedEntity instanceof Player) {
-                if(!((Player) pushedEntity).hasPermission(type.getPermission())) continue;
+                Player player = (Player) pushedEntity;
+                if(!player.hasPermission(type.getPermission())) continue;
                 
-                if(calculatePlayerWeight && pushedEntity.hasMetadata("weight")) {
-                    double weight = pushedEntity.getMetadata("weight").get(0).asDouble();
+                if(calculatePlayerWeight && player.hasPermission(ComponentType.WEIGHT.getPermission())) {
+                    double weight = weightComponent.getPlayerWeight(player);
                     velocity.subtract(velocity.clone().multiply(weight * weightModifier));
                 }
                 

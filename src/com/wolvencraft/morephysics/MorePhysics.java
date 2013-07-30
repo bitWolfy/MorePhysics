@@ -41,9 +41,7 @@ public class MorePhysics extends JavaPlugin {
                 "| [X] Enabling MorePhysics v." + Message.fillString(this.getDescription().getVersion(), 19) + "|");
         
         if(!new File(getDataFolder(), "config.yml").exists()) {
-            Message.log(
-                    "|  |- config.yml not found, copying it over     |",
-                    "|     for you                                   |");
+            Message.log("|  |- config.yml not found, copying it over.    |");
             getConfig().options().copyDefaults(true);
             saveConfig();
         }

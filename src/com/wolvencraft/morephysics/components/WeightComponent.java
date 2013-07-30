@@ -95,10 +95,7 @@ public class WeightComponent extends Component implements Listener {
     @Override
     public void onEnable() {
         if(!new File(MorePhysics.getInstance().getDataFolder(), "weight.yml").exists()) {
-            Message.log(
-                    "|  |- weight.yml not found, copying it over     |",
-                    "|     for you                                   |"
-                    );
+            Message.log("|  |- weight.yml not found, copying it over.    |");
             getWeightData().options().copyDefaults(true);
             saveWeightData();
         }
