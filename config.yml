@@ -44,7 +44,7 @@ pistons:
     sign-controlled: false
     weight:
         enabled: true
-        modifier: 0.001
+        modifier: 1.0
     power:
         entities: 4.0
         blocks: 3.0
@@ -68,7 +68,7 @@ player:
 weight:
     enabled: true
     exempt-worlds: []
-    speed-modifier: 0.0001
+    speed-modifier: 1.0
     default-speed: 1.0
     exempt-creative: true
     recalculate-when-walking: false

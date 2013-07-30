@@ -76,7 +76,7 @@ public class PistonComponent extends Component implements Listener {
         
         FileConfiguration configFile = MorePhysics.getInstance().getConfig();
         calculatePlayerWeight = configFile.getBoolean("pistons.weight.enabled");
-        weightModifier = configFile.getDouble("pistons.weight.modifier");
+        weightModifier = configFile.getDouble("pistons.weight.modifier") * WeightComponent.SPEED_MODIFIER_RATIO;
         effects = configFile.getBoolean("pistons.effects");
         signControlled = configFile.getBoolean("pistons.sign-controlled");
     }

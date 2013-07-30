@@ -62,6 +62,7 @@ import com.wolvencraft.morephysics.util.Util;
  */
 public class WeightComponent extends Component implements Listener {
     
+    public static final double SPEED_MODIFIER_RATIO = 0.0001;
     private static final double DEFAULT_SPEED_RATIO = 0.2;
     
     private Map<MaterialData, Double> weightMap;
@@ -86,7 +87,7 @@ public class WeightComponent extends Component implements Listener {
         
         FileConfiguration configFile = MorePhysics.getInstance().getConfig();
         
-        speedMultiplyer = configFile.getDouble("weight.speed-modifier");
+        speedMultiplyer = configFile.getDouble("weight.speed-modifier") * SPEED_MODIFIER_RATIO;
         defaultSpeed = configFile.getDouble("weight.default-speed") * DEFAULT_SPEED_RATIO;
         
         
