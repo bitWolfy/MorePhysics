@@ -1,5 +1,4 @@
-general:
-    default: 1
+default: 1
 blocks:
 - stone,0
 - 17:0,1

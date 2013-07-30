@@ -39,6 +39,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -63,7 +64,10 @@ public class WeightComponent extends Component implements Listener {
     
     private double defaultWeight;
     private double speedMultiplyer;
+    private double defaultSpeed;
+    
     private boolean exemptCreative;
+    private boolean costlyRecalc;
     
     private FileConfiguration weightData = null;
     private File weightDataFile = null;
@@ -73,12 +77,16 @@ public class WeightComponent extends Component implements Listener {
         
         if(!enabled) return;
         
-        defaultWeight = getWeightData().getDouble("general.default");
+        defaultWeight = getWeightData().getDouble("default");
         
         FileConfiguration configFile = MorePhysics.getInstance().getConfig();
         
         speedMultiplyer = configFile.getDouble("weight.speed-modifier");
+        defaultSpeed = configFile.getDouble("weight.default-speed");
+        
+        
         exemptCreative = configFile.getBoolean("weight.exempt-creative");
+        costlyRecalc = configFile.getBoolean("weight.recalculate-when-walking");
     }
     
     @Override
@@ -105,6 +113,7 @@ public class WeightComponent extends Component implements Listener {
         }
         
         Message.log("|  |- Loaded material weight: " + Message.fillString(count + " entries", 18) + "|");
+        
         Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
     }
     
@@ -115,112 +124,74 @@ public class WeightComponent extends Component implements Listener {
     
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if(exemptWorlds.contains(event.getPlayer().getWorld().getName())) return;
-        
         Player player = event.getPlayer();
-        if(!player.hasPermission(type.getPermission())) return;
         
-        setPlayerSpeed(player, getPlayerWeight(player));
+        if(exemptWorlds.contains(player.getWorld().getName())
+                || !player.hasPermission(type.getPermission())
+                || (exemptCreative && player.getGameMode().equals(GameMode.CREATIVE))) {
+            setPlayerSpeed(player, getDefaultPlayerSpeed());
+            return;
+        }
+        
+        calculatePlayerSpeed(player);
     }
     
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
-
-        if(exemptWorlds.contains(player.getWorld().getName())) return;
         
-        if(!player.hasPermission(type.getPermission())
-                || (exemptCreative
-                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
+        if(exemptWorlds.contains(player.getWorld().getName())
+                || !player.hasPermission(type.getPermission())
+                || (exemptCreative && player.getGameMode().equals(GameMode.CREATIVE))) {
+            setPlayerSpeed(player, getDefaultPlayerSpeed());
+            return;
+        }
         
-        double weight = getPlayerWeight(player);
-        setPlayerSpeed(player, weight);
-        Message.debug(
-                "Player weight = " + weight,
-                "Setting speed to " + player.getWalkSpeed()
-                );
+        calculatePlayerSpeed(player);
     }
     
     @EventHandler
     public void onItemPickup(PlayerPickupItemEvent event) {
         Player player = (Player) event.getPlayer();
         
-        if(exemptWorlds.contains(player.getWorld().getName())) return;
+        if(exemptWorlds.contains(player.getWorld().getName())
+                || !player.hasPermission(type.getPermission())
+                || (exemptCreative && player.getGameMode().equals(GameMode.CREATIVE))) {
+            setPlayerSpeed(player, getDefaultPlayerSpeed());
+            return;
+        }
         
-        if(!player.hasPermission(type.getPermission())
-                || (exemptCreative
-                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
-        
-        setPlayerSpeed(player, getPlayerWeight(player));
-        
-        double weight = getPlayerWeight(player);
-        setPlayerSpeed(player, weight);
-        Message.debug(
-                "Player weight = " + weight,
-                "Setting speed to " + player.getWalkSpeed()
-                );
+        calculatePlayerSpeed(player);
     }
     
     @EventHandler
     public void onItemDrop(PlayerDropItemEvent event) {
         Player player = (Player) event.getPlayer();
         
-        if(exemptWorlds.contains(player.getWorld().getName())) return;
-        
-        if(!player.hasPermission(type.getPermission())
-                || (exemptCreative
-                        && player.getGameMode().equals(GameMode.CREATIVE))) return;
-        
-      setPlayerSpeed(player, getPlayerWeight(player));
-      
-      double weight = getPlayerWeight(player);
-      setPlayerSpeed(player, weight);
-      Message.debug(
-              "Player weight = " + weight,
-              "Setting speed to " + player.getWalkSpeed()
-              );
-    }
-    
-    /**
-     * Processes player weight
-     * @param player Player to process
-     */
-    public double getPlayerWeight(Player player) {
-        PlayerInventory inventory = player.getInventory();
-        
-        double totalWeight = 0;
-        ListIterator<ItemStack> it = inventory.iterator();
-        while(it.hasNext()) {
-            ItemStack curItem = (ItemStack) it.next();
-            if(curItem == null) continue;
-            totalWeight += getStackWeight(curItem);
+        if(exemptWorlds.contains(player.getWorld().getName())
+                || !player.hasPermission(type.getPermission())
+                || (exemptCreative && player.getGameMode().equals(GameMode.CREATIVE))) {
+            setPlayerSpeed(player, getDefaultPlayerSpeed());
+            return;
         }
         
-        for(ItemStack armor : inventory.getArmorContents()) totalWeight += getStackWeight(armor);
-        
-        player.setMetadata("weight", new FixedMetadataValue(MorePhysics.getInstance(), totalWeight));
-        
-        return totalWeight;
+        calculatePlayerSpeed(player);
     }
     
-    /**
-     * Returns the weight of an item stack.
-     * @param stack Item stack to evaluate
-     * @return <b>double</b> weight
-     */
-    private double getStackWeight(ItemStack stack) {
-        double blockWeight = getMaterialWeight(stack.getData());
-        return blockWeight * stack.getAmount();
-    }
-    
-    /**
-     * Returns the weight of an item type.
-     * @param material Item type to evaluate
-     * @return <b>double</b> weight
-     */
-    private double getMaterialWeight(MaterialData material) {
-        if(weightMap.containsKey(material)) return weightMap.get(material).doubleValue();
-        else return defaultWeight;
+    @EventHandler
+    public void onPlayerWalk(PlayerMoveEvent event) {
+        if(!costlyRecalc) return;
+        
+        Player player = event.getPlayer();
+        
+        if(exemptWorlds.contains(player.getWorld().getName())
+                || !player.hasPermission(type.getPermission())
+                || (exemptCreative && player.getGameMode().equals(GameMode.CREATIVE))) {
+            setPlayerSpeed(player, getDefaultPlayerSpeed());
+            return;
+        }
+        
+        calculatePlayerSpeed(player);
     }
     
     /**
@@ -260,7 +231,7 @@ public class WeightComponent extends Component implements Listener {
      * @return Default player speed
      */
     public float getDefaultPlayerSpeed() {
-        return 0.2f;
+        return (float) defaultSpeed;
     }
     
     /**
@@ -268,13 +239,65 @@ public class WeightComponent extends Component implements Listener {
      * @param player Player to process
      * @param weight Inventory weight
      */
-    public void setPlayerSpeed(Player player, double weight) {
-        player.setWalkSpeed(getDefaultPlayerSpeed());
+    private void calculatePlayerSpeed(Player player) {
+        double weight = getPlayerWeight(player);
         
         float speed = (float) (getDefaultPlayerSpeed() - (weight * this.speedMultiplyer));
         if(speed <= 0) speed = 0.01f;
         else if(speed > 1) speed = 1f;
+        setPlayerSpeed(player, speed);
+        
+        Message.debug(
+                "Player weight = " + weight,
+                "Setting speed to " + player.getWalkSpeed()
+                );
+    }
+    
+    /**
+     * Sets the player speed
+     * @param player Player to process
+     * @param weight Inventory weight
+     */
+    private void setPlayerSpeed(Player player, float speed) {
+        float playerSpeed = player.getWalkSpeed();
+        if(playerSpeed == speed) return;
+        
         player.setWalkSpeed(speed);
+    }
+    
+    /**
+     * Processes player weight
+     * @param player Player to process
+     */
+    public double getPlayerWeight(Player player) {
+        PlayerInventory inventory = player.getInventory();
+        
+        double totalWeight = 0;
+        ListIterator<ItemStack> it = inventory.iterator();
+        while(it.hasNext()) {
+            ItemStack curItem = (ItemStack) it.next();
+            if(curItem == null) continue;
+            totalWeight += getStackWeight(curItem);
+        }
+        
+        for(ItemStack armor : inventory.getArmorContents()) totalWeight += getStackWeight(armor);
+        
+        player.setMetadata("weight", new FixedMetadataValue(MorePhysics.getInstance(), totalWeight));
+        
+        return totalWeight;
+    }
+    
+    /**
+     * Returns the weight of an item stack.
+     * @param stack Item stack to evaluate
+     * @return <b>double</b> weight
+     */
+    private double getStackWeight(ItemStack stack) {
+        MaterialData material = stack.getData();
+        double blockWeight = defaultWeight;
+        if(weightMap.containsKey(material)) blockWeight = weightMap.get(material).doubleValue();
+        
+        return blockWeight * stack.getAmount();
     }
     
 }
