@@ -92,7 +92,7 @@ public class PistonComponent extends Component implements Listener {
         }
         
         if(calculatePlayerWeight
-                && MorePhysics.getComponentManager().isComponentEnabled(ComponentType.WEIGHT)) {
+                && !MorePhysics.getComponentManager().isComponentEnabled(ComponentType.WEIGHT)) {
             Message.log(
                     "|  |- WeightComponent is disabled - cannot      |",
                     "|  |  calculate player weight into velocity     |"
