@@ -29,6 +29,9 @@ permissions:
     morephysics.pistons:
         description: Enables launchy pistons
         default: false
+    morephysics.player:
+        description: Enables player rate modifications
+        default: false
     morephysics.weight:
         description: Enables inventory weight
         default: false
