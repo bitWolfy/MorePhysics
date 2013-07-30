@@ -41,6 +41,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
@@ -123,6 +124,9 @@ public class WeightComponent extends Component implements Listener {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
+        
+        for(Player player : Bukkit.getServer().getOnlinePlayers())
+            setPlayerSpeed(player, getDefaultPlayerSpeed());
     }
     
     @Override
@@ -162,6 +166,13 @@ public class WeightComponent extends Component implements Listener {
         }
         
         calculatePlayerSpeed(player);
+    }
+    
+    @EventHandler
+    public void onPlayerQuite(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        
+        setPlayerSpeed(player, getDefaultPlayerSpeed());
     }
     
     @EventHandler
