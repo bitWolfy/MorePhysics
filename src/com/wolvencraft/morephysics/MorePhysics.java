@@ -22,6 +22,8 @@ package com.wolvencraft.morephysics;
 
 import java.io.File;
 
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.wolvencraft.morephysics.metrics.Statistics;
@@ -56,6 +58,8 @@ public class MorePhysics extends JavaPlugin {
         
         metrics.start();
         
+        new CommandManager();
+        
         Message.log(
                 "| [X] MorePhysics is enabled                    |",
                 "+-----------------------------------------------+"
@@ -71,6 +75,11 @@ public class MorePhysics extends JavaPlugin {
         
         instance = null;
         componentManager = null;
+    }
+    
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        return CommandManager.run(sender, args);
     }
     
     /**
