@@ -60,9 +60,12 @@ import com.wolvencraft.morephysics.util.Util;
  */
 public class WeightComponent extends Component implements Listener {
     
+    private static final double DEFAULT_SPEED_RATIO = 0.2;
+    
     private Map<MaterialData, Double> weightMap;
     
     private double defaultWeight;
+    
     private double speedMultiplyer;
     private double defaultSpeed;
     
@@ -82,7 +85,7 @@ public class WeightComponent extends Component implements Listener {
         FileConfiguration configFile = MorePhysics.getInstance().getConfig();
         
         speedMultiplyer = configFile.getDouble("weight.speed-modifier");
-        defaultSpeed = configFile.getDouble("weight.default-speed");
+        defaultSpeed = configFile.getDouble("weight.default-speed") * DEFAULT_SPEED_RATIO;
         
         
         exemptCreative = configFile.getBoolean("weight.exempt-creative");
@@ -276,8 +279,7 @@ public class WeightComponent extends Component implements Listener {
         ListIterator<ItemStack> it = inventory.iterator();
         while(it.hasNext()) {
             ItemStack curItem = (ItemStack) it.next();
-            if(curItem == null) continue;
-            totalWeight += getStackWeight(curItem);
+            if(curItem != null) totalWeight += getStackWeight(curItem);
         }
         
         for(ItemStack armor : inventory.getArmorContents()) totalWeight += getStackWeight(armor);
