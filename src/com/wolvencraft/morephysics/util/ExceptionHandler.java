@@ -21,8 +21,11 @@
 package com.wolvencraft.morephysics.util;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 
+import com.wolvencraft.morephysics.CommandManager.CommandPair;
 import com.wolvencraft.morephysics.Configuration;
 import com.wolvencraft.morephysics.MorePhysics;
 
@@ -72,6 +75,53 @@ public class ExceptionHandler {
                 );
         for(StackTraceElement element : t.getStackTrace()) {
             Message.log("| at " + element.toString());
+        }
+        Message.log(
+                "| Multiple errors might have occurred, only one",
+                "| stack trace is shown.",
+                "+-----------------------------------------------+"
+                );
+    }
+    
+    /**
+     * Display a properly formatted error log in the server console.
+     * Used to handle errors that occur while executing a command
+     * @param t Throwable
+     * @param sender Command sender
+     * @param command Command pair that was sent
+     */
+    public static void handle(Throwable t, CommandSender sender, CommandPair command) {
+        if(t.getLocalizedMessage().equalsIgnoreCase(lastError)) return;
+        else lastError = t.getClass().getName();
+        
+        Message.send(sender, ChatColor.RED + "An internal error occurred while executing the command");
+        
+        PluginDescriptionFile description = MorePhysics.getInstance().getDescription();
+        String alias = "";
+        for(String str : command.getProperties().alias()) {
+            alias += str + " ";
+        }
+        
+        Message.log(
+                "+--------------- [ MorePhysics ] ---------------+",
+                "| The plugin 'Statistics' has caused an error.",
+                "| Please, create a new ticket with this error at",
+                "| " + description.getWebsite(),
+                "| ",
+                "| Bukkit   : " + Bukkit.getVersion(),
+                "| Plugin   : " + description.getFullName(),
+                "| Version  : " + description.getVersion(),
+                "| Error    : " + t.getClass().getName(),
+                "|            " + t.getLocalizedMessage(),
+                "+-----------------------------------------------+",
+                "| Command  : " + command.getCommand().getName(),
+                "| Alias    : " + alias,
+                "+-----------------------------------------------+",
+                "| The stack trace of the error follows: ",
+                "| "
+                );
+        for(StackTraceElement element : t.getStackTrace()) {
+            Message.log("| " + element.toString());
         }
         Message.log(
                 "| Multiple errors might have occurred, only one",

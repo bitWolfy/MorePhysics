@@ -52,6 +52,7 @@ public class MorePhysics extends JavaPlugin {
         
         Configuration.clearCache();
         componentManager = new ComponentManager();
+        componentManager.enable();
         
         metrics.start();
         

@@ -31,6 +31,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.wolvencraft.morephysics.CommandManager;
 import com.wolvencraft.morephysics.Configuration;
 import com.wolvencraft.morephysics.MorePhysics;
 
@@ -53,8 +54,19 @@ public class Message {
     public static void send(CommandSender sender, String message) {
         if(sender == null) sender = Bukkit.getServer().getConsoleSender();
         if(message == null) return;
-        message = parseChatColors(message);
+        message = parseColors(message);
         sender.sendMessage(message);
+    }
+    
+    /**
+     * Sends a message to the latest CommandSender.<br />
+     * Wraps around <i>send(CommandSender sender, String message)</i>, substituting the latest CommandSender for sender.
+     * Therefore, it is only safe to use this method in command classes.
+     * @param message Message to be sent
+     */
+    public static void send(String message) {
+        CommandSender sender = CommandManager.getSender();
+        send(sender, message);
     }
     
     /**
@@ -72,11 +84,42 @@ public class Message {
     }
     
     /**
+     * Builds and sends a message with a green-colored title.
+     * @param sender CommandSender to forward the message to
+     * @param message Message to be sent
+     */
+    public static void sendFormattedSuccess(CommandSender sender, String message) {
+        sendFormatted(sender, ChatColor.DARK_GREEN, Configuration.Prefix.toString(), message);
+    }
+    
+    /**
+     * Builds and sends a message with a green-colored title.<br />
+     * Wraps around <i>send(CommandSender sender, String message)</i>, substituting the latest CommandSender for sender.
+     * Therefore, it is only safe to use this method in command classes.
+     * @param message Message to be sent
+     */
+    public static void sendFormattedSuccess(String message) {
+        CommandSender sender = CommandManager.getSender();
+        sendFormatted(sender, ChatColor.DARK_GREEN, Configuration.Prefix.toString(), message);
+    }
+    
+    /**
      * Builds and sends a message with a red-colored title.
      * @param sender CommandSender to forward the message to
      * @param message Message to be sent
      */
     public static void sendFormattedError(CommandSender sender, String message) {
+        sendFormatted(sender, ChatColor.DARK_RED, Configuration.Prefix.toString(), message);
+    }
+    
+    /**
+     * Builds and sends a message with a red-colored title.<br />
+     * Wraps around <i>send(CommandSender sender, String message)</i>, substituting the latest CommandSender for sender.
+     * Therefore, it is only safe to use this method in command classes.
+     * @param message Message to be sent
+     */
+    public static void sendFormattedError(String message) {
+        CommandSender sender = CommandManager.getSender();
         sendFormatted(sender, ChatColor.DARK_RED, Configuration.Prefix.toString(), message);
     }
     
@@ -87,7 +130,7 @@ public class Message {
     public static void broadcast(String message) {
         for (Player p : Bukkit.getServer().getOnlinePlayers())
             sendFormatted(p, ChatColor.DARK_GREEN, Configuration.Prefix.toString(), message);
-        log(parseChatColors(message));
+        log(parseColors(message));
     }
     
     /**
@@ -127,6 +170,49 @@ public class Message {
     }
     
     /**
+     * Formats the help string for the specified sub-command and arguments.<br />
+     * The CommandSender will not be able to see the message if he lacks the permissions node specified.<br />
+     * Borrows the CommandSender from the CommandManager; therefore, it is not safe to use this method outside of command classes.
+     * @param command Sub-command name
+     * @param arguments Command arguments
+     * @param description Command description
+     * @param node Permissions node needed to see the help message
+     */
+    public static void formatHelp(String command, String arguments, String description, String node) {
+        CommandSender sender = CommandManager.getSender();
+        if(!arguments.equalsIgnoreCase("")) arguments = " " + arguments;
+        if(sender.hasPermission(node) || node.equals(""))
+            sender.sendMessage(ChatColor.GOLD + "/stats " + command + ChatColor.GRAY + arguments + ChatColor.WHITE + " " + description);
+        return;
+    }
+    
+    /**
+     * Formats the help string for the specified sub-command and arguments.<br />
+     * Wraps around <i>formatHelp(String command, String arguments, String description, String node)</i> with an empty permissions node.<br />
+     * Borrows the CommandSender from the CommandManager; therefore, it is not safe to use this method outside of command classes.
+     * @param command Sub-command name
+     * @param arguments Command arguments
+     * @param description Command description
+     */
+    public static void formatHelp(String command, String arguments, String description) {
+        formatHelp(command, arguments, description, "");
+        return;
+    }
+    
+    /**
+     * Formats the specified string and shifts it according to the padding provided.<br />
+     * Borrows the CommandSender from the CommandManager; therefore, it is not safe to use this method outside of command classes.
+     * @param padding Number of spaces to shift the string
+     * @param str String to format and shift
+     */
+    public static void formatHeader(int padding, String str) {
+        CommandSender sender = CommandManager.getSender();
+        String spaces = "";
+        for(int i = 0; i < padding; i++) { spaces = spaces + " "; }
+        sender.sendMessage(spaces + "-=[ " + ChatColor.BLUE + str + ChatColor.WHITE + " ]=-");
+    }
+    
+    /**
      * Centers the string to take up the specified number of characters
      * @param str String to center
      * @param length New String length
@@ -137,7 +223,7 @@ public class Message {
         if(str.length() > length) str = str.substring(1);
         return str;
     }
-    
+
     /**
      * Fills the string with spaces to match the specified length
      * @param str String to fill
@@ -150,11 +236,11 @@ public class Message {
     }
     
     /**
-     * Parses color codes in the String and replaces them with ChatColors
-     * @param str String to parse
-     * @return Result string
+     * Parses the string, replacing ampersand-codes with CraftBukkit color codes
+     * @param str String to be parsed
+     * @return Parsed string
      */
-    private static String parseChatColors(String str) {
+    public static String parseColors(String str) {
         if(str == null) return "";
         for(ChatColor color : ChatColor.values()) str = str.replaceAll("&" + color.getChar(), color + "");
         return str;

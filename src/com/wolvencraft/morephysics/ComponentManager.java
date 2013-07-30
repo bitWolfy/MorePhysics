@@ -50,6 +50,12 @@ public class ComponentManager {
     
     public ComponentManager() {
         components = new ArrayList<Component>();
+    }
+    
+    /**
+     * Enables the components
+     */
+    public void enable() {
         PluginMetrics metrics = MorePhysics.getStatistics().getMetrics();
         
         for(ComponentType component : ComponentType.values()) {
