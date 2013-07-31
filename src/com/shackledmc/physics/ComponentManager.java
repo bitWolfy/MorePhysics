@@ -114,13 +114,13 @@ public class ComponentManager {
     @Getter(AccessLevel.PUBLIC)
     public enum ComponentType {
         
-        ARROW           ("arrows", ArrowComponent.class, "morephysics.arrows"),
-        BLOOD           ("blood", BloodComponent.class, "morephysics.blood"),
-        BOAT            ("boats", BoatComponent.class, "morephysics.boats"),
-        MINECART        ("minecarts", MinecartComponent.class, "morephysics.minecarts"),
-        PISTON          ("pistons", PistonComponent.class, "morephysics.pistons"),
-        PLAYER          ("player", PlayerComponent.class, "morephysics.player"),
-        WEIGHT          ("weight", WeightComponent.class, "morephysics.weight"),
+        ARROW           ("arrows", ArrowComponent.class, "physics.arrows"),
+        BLOOD           ("blood", BloodComponent.class, "physics.blood"),
+        BOAT            ("boats", BoatComponent.class, "physics.boats"),
+        MINECART        ("minecarts", MinecartComponent.class, "physics.minecarts"),
+        PISTON          ("pistons", PistonComponent.class, "physics.pistons"),
+        PLAYER          ("player", PlayerComponent.class, "physics.player"),
+        WEIGHT          ("weight", WeightComponent.class, "physics.weight"),
         ;
 
         private String configKey;

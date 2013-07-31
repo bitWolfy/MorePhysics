@@ -34,13 +34,13 @@ import com.shackledmc.physics.util.Message;
 public class PluginCommands {
     
     @Command(
-            alias = "sync",
+            alias = "reload",
             minArgs = 0,
             maxArgs = 0,
-            permission = "morephysics.cmd.reload",
+            permission = "physics.cmd.reload",
             allowConsole = true,
-            usage = "/morephysics reload",
-            description = "Reloads plugin configuration from the database"
+            usage = "/physics reload",
+            description = "Reloads plugin configuration from file"
             )
     public static boolean reload(List<String> args) {
         Physics.getComponentManager().disable();
@@ -54,9 +54,9 @@ public class PluginCommands {
             alias = "help",
             minArgs = 0,
             maxArgs = 0,
-            permission = "stats.cmd.help",
+            permission = "physics.cmd.help",
             allowConsole = true,
-            usage = "/stats help",
+            usage = "/physics help",
             description = "Full command help listing"
             )
     public static boolean help(List<String> args) {

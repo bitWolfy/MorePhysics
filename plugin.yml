@@ -3,17 +3,33 @@ main: com.shackledmc.physics.Physics
 website: http://dev.bukkit.org/bukkit-plugins/physics/
 version: 2.3.0
 authors: [FriedTaco, bitWolfy]
+commands:
+    physics:
+        description: Physics help
 permissions:
     physics.*:
         description: Applies the effects of MorePhysics to players
         default: false
         children:
+            physics.cmd.*: true
             physics.arrows: true
             physics.blood: true
             physics.boats: true
             physics.minecarts: true
             physics.pistons: true
             physics.weight: true
+    physics.cmd.*:
+        description: Allows the use of all plugin commands
+        default: op
+        children:
+            physics.cmd.reload: true
+            physics.cmd.help: true
+    physics.cmd.reload:
+        description: Allows the use of the reload command
+        default: op
+    physics.cmd.help:
+        description: Allows the use of the help command
+        default: op
     physics.arrows:
         description: Enables body part-specific critical damage
         default: false
