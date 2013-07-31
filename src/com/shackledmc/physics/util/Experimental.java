@@ -28,13 +28,31 @@ import net.minecraft.server.v1_6_R2.Packet63WorldParticles;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftPlayer;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+
+import com.shackledmc.physics.Physics;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access=AccessLevel.PRIVATE)
-public class Experimental {
+public class Experimental implements Listener {
+    
+    public Experimental() {
+        Bukkit.getServer().getPluginManager().registerEvents(this, Physics.getInstance());
+    }
+    
+    @EventHandler
+    public void onEarlyJoin(PlayerJoinEvent event) {
+        ((CraftPlayer)event.getPlayer()).getHandle().playerConnection.checkMovement = false;
+    }
+    
+    @EventHandler
+    public void onLateJoin(PlayerJoinEvent event) {
+        ((CraftPlayer)event.getPlayer()).getHandle().playerConnection.checkMovement = false;
+    }
     
     public static void createBlockEffect(Location location, int blockId) {
         Packet61WorldEvent packet = new Packet61WorldEvent(2001,
