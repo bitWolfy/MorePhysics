@@ -13,7 +13,7 @@
                 <include name="*.yml"/>
             </fileset>
         </copy>
-        <jar jarfile="MorePhysics.jar" basedir="build"/>
+        <jar jarfile="MorePhysicsLite.jar" basedir="build"/>
         <delete dir="build"/>
     </target>
 </project>
