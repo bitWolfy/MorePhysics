@@ -34,7 +34,7 @@ import com.shackledmc.physics.ComponentManager.ComponentType;
  *
  */
 @Getter(AccessLevel.PUBLIC)
-public class BoatSinkEvent extends MorePhysicsEvent {
+public class BoatSinkEvent extends PhysicsEvent {
     
     private static final HandlerList handlers = new HandlerList();
     

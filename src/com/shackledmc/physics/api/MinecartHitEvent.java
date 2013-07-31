@@ -35,7 +35,7 @@ import lombok.Getter;
  *
  */
 @Getter(AccessLevel.PUBLIC)
-public class MinecartHitEvent extends MorePhysicsEvent {
+public class MinecartHitEvent extends PhysicsEvent {
     
     private static final HandlerList handlers = new HandlerList();
     

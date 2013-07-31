@@ -35,7 +35,7 @@ import com.shackledmc.physics.ComponentManager.ComponentType;
  */
 @AllArgsConstructor(access=AccessLevel.PUBLIC)
 @Getter(AccessLevel.PUBLIC)
-public abstract class MorePhysicsEvent extends Event {
+public abstract class PhysicsEvent extends Event {
     
     private ComponentType component;
     

@@ -36,7 +36,7 @@ import com.shackledmc.physics.components.ArrowComponent.HitArea;
  *
  */
 @Getter(AccessLevel.PUBLIC)
-public class ProjectileCritEvent extends MorePhysicsEvent {
+public class ProjectileCritEvent extends PhysicsEvent {
     
     private static final HandlerList handlers = new HandlerList();
     
