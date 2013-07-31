@@ -27,13 +27,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import com.shackledmc.physics.components.ArrowComponent;
-import com.shackledmc.physics.components.BloodComponent;
-import com.shackledmc.physics.components.BoatComponent;
 import com.shackledmc.physics.components.Component;
-import com.shackledmc.physics.components.MinecartComponent;
 import com.shackledmc.physics.components.PistonComponent;
-import com.shackledmc.physics.components.PlayerComponent;
 import com.shackledmc.physics.components.WeightComponent;
 import com.shackledmc.physics.metrics.PluginMetrics;
 import com.shackledmc.physics.util.ExceptionHandler;
@@ -114,12 +109,7 @@ public class ComponentManager {
     @Getter(AccessLevel.PUBLIC)
     public enum ComponentType {
         
-        ARROW           ("arrows", ArrowComponent.class, "physics.arrows"),
-        BLOOD           ("blood", BloodComponent.class, "physics.blood"),
-        BOAT            ("boats", BoatComponent.class, "physics.boats"),
-        MINECART        ("minecarts", MinecartComponent.class, "physics.minecarts"),
         PISTON          ("pistons", PistonComponent.class, "physics.pistons"),
-        PLAYER          ("player", PlayerComponent.class, "physics.player"),
         WEIGHT          ("weight", WeightComponent.class, "physics.weight"),
         ;
 
