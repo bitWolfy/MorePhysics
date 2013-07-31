@@ -1,7 +1,7 @@
 /*
  * PlayerComponent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.components;
+package com.shackledmc.physics.components;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EnderDragon;
@@ -36,10 +36,10 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
-import com.wolvencraft.morephysics.metrics.PluginMetrics;
-import com.wolvencraft.morephysics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.metrics.PluginMetrics;
+import com.shackledmc.physics.metrics.PluginMetrics.Graph;
 
 /**
  * Player component.
@@ -60,7 +60,7 @@ public class PlayerComponent extends Component implements Listener {
     
     @Override
     public void onEnable() {
-        Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(this, Physics.getInstance());
     }
     
     @Override
@@ -165,7 +165,7 @@ public class PlayerComponent extends Component implements Listener {
         }
         
         private void refresh() {
-            modifier = MorePhysics.getInstance().getConfig().getDouble("player.modifiers." + key);
+            modifier = Physics.getInstance().getConfig().getDouble("player.modifiers." + key);
         }
         
         public static void clearCache() {

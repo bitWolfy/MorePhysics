@@ -1,7 +1,7 @@
 /*
  * BoatComponent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.components;
+package com.shackledmc.physics.components;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -36,12 +36,12 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
-import com.wolvencraft.morephysics.metrics.PluginMetrics;
-import com.wolvencraft.morephysics.metrics.PluginMetrics.Graph;
-import com.wolvencraft.morephysics.util.Experimental;
-import com.wolvencraft.morephysics.util.Message;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.metrics.PluginMetrics;
+import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.util.Experimental;
+import com.shackledmc.physics.util.Message;
 
 /**
  * Boat component.
@@ -60,13 +60,13 @@ public class BoatComponent extends Component implements Listener {
         
         if(!enabled) return;
         
-        damageMultiplyer = MorePhysics.getInstance().getConfig().getDouble("boats.damage-multiplyer");
-        effects = MorePhysics.getInstance().getConfig().getBoolean("boats.effects");
+        damageMultiplyer = Physics.getInstance().getConfig().getDouble("boats.damage-multiplyer");
+        effects = Physics.getInstance().getConfig().getBoolean("boats.effects");
     }
     
     @Override
     public void onEnable() {
-        if(effects && !MorePhysics.isCraftBukkitCompatible()) {
+        if(effects && !Physics.isCraftBukkitCompatible()) {
             Message.log(
                     "|  |- Particle effects are not compatible with  |",
                     "|     your CraftBukkit version. Disabling...    |"
@@ -74,7 +74,7 @@ public class BoatComponent extends Component implements Listener {
             effects = false;
         }
         
-        Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(this, Physics.getInstance());
     }
     
     @Override
@@ -118,7 +118,7 @@ public class BoatComponent extends Component implements Listener {
         if (passenger == null || (passenger != null && !((Player) passenger).hasPermission(type.getPermission()))) return;
         
         if(!boat.hasMetadata("sinking") && !boat.isDead() && (event.getDamage() >= 2)) {
-            boat.setMetadata("sinking", new FixedMetadataValue(MorePhysics.getInstance(), true));
+            boat.setMetadata("sinking", new FixedMetadataValue(Physics.getInstance(), true));
             boat.setVelocity(boat.getVelocity().subtract(new Vector(0,.05,0).multiply(damageMultiplyer)));
         }
 
@@ -131,7 +131,7 @@ public class BoatComponent extends Component implements Listener {
         
         Vehicle vehicle = event.getVehicle();
         if(vehicle instanceof Boat && vehicle.hasMetadata("sinking"))
-            vehicle.removeMetadata("sinking", MorePhysics.getInstance());     
+            vehicle.removeMetadata("sinking", Physics.getInstance());     
     }
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
