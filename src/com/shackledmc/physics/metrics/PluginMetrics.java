@@ -26,7 +26,7 @@
  * either expressed or implied, of anybody else.
  */
 
-package com.wolvencraft.morephysics.metrics;
+package com.shackledmc.physics.metrics;
  
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;

@@ -1,7 +1,7 @@
 /*
  * Message.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.util;
+package com.shackledmc.physics.util;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,9 +31,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.wolvencraft.morephysics.CommandManager;
-import com.wolvencraft.morephysics.Configuration;
-import com.wolvencraft.morephysics.MorePhysics;
+import com.shackledmc.physics.CommandManager;
+import com.shackledmc.physics.Configuration;
+import com.shackledmc.physics.Physics;
 
 /**
  * A collection of methods utilized to send messages to the players
@@ -43,7 +43,7 @@ import com.wolvencraft.morephysics.MorePhysics;
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public class Message {
     
-    private static Logger logger = MorePhysics.getInstance().getLogger();
+    private static Logger logger = Physics.getInstance().getLogger();
     
     /**
      * Send a message to the specified CommandSender.<br />

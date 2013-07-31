@@ -1,7 +1,7 @@
 /*
  * MinecartComponent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.components;
+package com.shackledmc.physics.components;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -45,13 +45,13 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
-import com.wolvencraft.morephysics.metrics.PluginMetrics;
-import com.wolvencraft.morephysics.metrics.PluginMetrics.Graph;
-import com.wolvencraft.morephysics.util.Experimental;
-import com.wolvencraft.morephysics.util.Message;
-import com.wolvencraft.morephysics.util.Experimental.ParticleEffectType;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.metrics.PluginMetrics;
+import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.util.Experimental;
+import com.shackledmc.physics.util.Message;
+import com.shackledmc.physics.util.Experimental.ParticleEffectType;
 
 /**
  * Minecart component.
@@ -72,7 +72,7 @@ public class MinecartComponent extends Component implements Listener {
         if(!enabled) return;
         
         MinecartModifier.clearCache();
-        FileConfiguration configFile = MorePhysics.getInstance().getConfig();
+        FileConfiguration configFile = Physics.getInstance().getConfig();
         minSpeedSquared = Math.pow(configFile.getDouble("minecarts.min-detected-speed"), 2);
         deathMessage = configFile.getString("minecarts.death-message");
         effects = configFile.getBoolean("minecarts.effects");
@@ -80,7 +80,7 @@ public class MinecartComponent extends Component implements Listener {
     
     @Override
     public void onEnable() {
-        if(effects && !MorePhysics.isCraftBukkitCompatible()) {
+        if(effects && !Physics.isCraftBukkitCompatible()) {
             Message.log(
                     "|  |- Particle effects are not compatible with  |",
                     "|     your CraftBukkit version. Disabling...    |"
@@ -88,7 +88,7 @@ public class MinecartComponent extends Component implements Listener {
             effects = false;
         }
         
-        Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(this, Physics.getInstance());
     }
     
     @Override
@@ -157,9 +157,9 @@ public class MinecartComponent extends Component implements Listener {
                 victim.damage(damageValue);
                 
                 // Process death message handling
-                victim.setMetadata("hitbyminecart", new FixedMetadataValue(MorePhysics.getInstance(), true));
+                victim.setMetadata("hitbyminecart", new FixedMetadataValue(Physics.getInstance(), true));
                 
-                Bukkit.getScheduler().runTaskLater(MorePhysics.getInstance(), new Runnable() {
+                Bukkit.getScheduler().runTaskLater(Physics.getInstance(), new Runnable() {
                     
                     @Override
                     public void run() {
@@ -167,7 +167,7 @@ public class MinecartComponent extends Component implements Listener {
                                 || (victim.hasMetadata("hitbyminecart")
                                         && !victim.getMetadata("hitbyminecart").get(0).asBoolean())) return;
                         
-                        victim.removeMetadata("hitbyminecart", MorePhysics.getInstance());
+                        victim.removeMetadata("hitbyminecart", Physics.getInstance());
                     }
                     
                 }, 20L);
@@ -228,7 +228,7 @@ public class MinecartComponent extends Component implements Listener {
         
         event.setDeathMessage(deathMessage.replaceAll("<PLAYER>", player.getName()));
         
-        player.removeMetadata("hitbyminecart", MorePhysics.getInstance());
+        player.removeMetadata("hitbyminecart", Physics.getInstance());
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -238,7 +238,7 @@ public class MinecartComponent extends Component implements Listener {
                 || (player.hasMetadata("hitbyminecart")
                         && !player.getMetadata("hitbyminecart").get(0).asBoolean())) return;
         
-        player.removeMetadata("hitbyminecart", MorePhysics.getInstance());
+        player.removeMetadata("hitbyminecart", Physics.getInstance());
     }
     
     private enum MinecartModifier {
@@ -257,8 +257,8 @@ public class MinecartComponent extends Component implements Listener {
         }
         
         private void refresh() {
-            modifier = MorePhysics.getInstance().getConfig().getDouble("minecarts.modifiers." + key + ".damage");
-            knockback = MorePhysics.getInstance().getConfig().getBoolean("minecarts.modifiers." + key + ".knockback");
+            modifier = Physics.getInstance().getConfig().getDouble("minecarts.modifiers." + key + ".damage");
+            knockback = Physics.getInstance().getConfig().getBoolean("minecarts.modifiers." + key + ".knockback");
         }
         
         public static void clearCache() {

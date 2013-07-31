@@ -1,7 +1,7 @@
 /*
- * BoatSinkEvent.java
+ * MorePhysicsEvent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,37 +18,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.api;
+package com.shackledmc.physics.api;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import org.bukkit.entity.Boat;
-import org.bukkit.event.HandlerList;
+import org.bukkit.event.Event;
 
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
+import com.shackledmc.physics.ComponentManager.ComponentType;
 
 /**
- * An event thrown when a boat takes enough damage to sink
+ * An abstract event called by MorePhysics
  * @author bitWolfy
  *
  */
+@AllArgsConstructor(access=AccessLevel.PUBLIC)
 @Getter(AccessLevel.PUBLIC)
-public class BoatSinkEvent extends MorePhysicsEvent {
+public abstract class MorePhysicsEvent extends Event {
     
-    private static final HandlerList handlers = new HandlerList();
+    private ComponentType component;
     
-    private Boat boat;
-    
-    public BoatSinkEvent(Boat boat) {
-        super(ComponentType.BOAT);
-        
-        this.boat = boat;
-    }
-    
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
 }

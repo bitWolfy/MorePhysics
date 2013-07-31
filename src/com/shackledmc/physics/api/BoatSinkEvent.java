@@ -1,7 +1,7 @@
 /*
- * Statistics.java
+ * BoatSinkEvent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,36 +18,37 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.metrics;
-
-import java.io.IOException;
+package com.shackledmc.physics.api;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.util.Message;
+import org.bukkit.entity.Boat;
+import org.bukkit.event.HandlerList;
+
+import com.shackledmc.physics.ComponentManager.ComponentType;
 
 /**
- * Statistics collection module
- * 
+ * An event thrown when a boat takes enough damage to sink
  * @author bitWolfy
  *
  */
 @Getter(AccessLevel.PUBLIC)
-public class Statistics {
+public class BoatSinkEvent extends MorePhysicsEvent {
     
-    private PluginMetrics metrics;
+    private static final HandlerList handlers = new HandlerList();
     
-    public Statistics(MorePhysics plugin) {
-        try { metrics = new PluginMetrics(plugin); }
-        catch (IOException e) { Message.log("| [X] PluginMetrics has failed to load          |"); }
+    private Boat boat;
+    
+    public BoatSinkEvent(Boat boat) {
+        super(ComponentType.BOAT);
+        
+        this.boat = boat;
     }
     
-    public void start() {
-        if(metrics == null) return;
-        metrics.start();
-        Message.log("| [X] PluginMetrics has started                 |");
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
-    
+
 }

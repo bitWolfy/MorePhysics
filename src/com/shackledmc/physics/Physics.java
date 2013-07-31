@@ -1,7 +1,7 @@
 /*
- * MorePhysics.java
+ * Physics.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics;
+package com.shackledmc.physics;
 
 import java.io.File;
 
@@ -26,13 +26,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.wolvencraft.morephysics.metrics.Statistics;
-import com.wolvencraft.morephysics.util.Experimental;
-import com.wolvencraft.morephysics.util.Message;
+import com.shackledmc.physics.metrics.Statistics;
+import com.shackledmc.physics.util.Experimental;
+import com.shackledmc.physics.util.Message;
 
-public class MorePhysics extends JavaPlugin {
+public class Physics extends JavaPlugin {
     
-    private static MorePhysics instance;
+    private static Physics instance;
     private static Statistics metrics;
     private static ComponentManager componentManager;
         
@@ -86,7 +86,7 @@ public class MorePhysics extends JavaPlugin {
      * Returns the current instance of the plugin
      * @return MorePhysics instance
      */
-    public static MorePhysics getInstance() {
+    public static Physics getInstance() {
         return instance;
     }
     

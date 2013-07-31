@@ -1,7 +1,7 @@
 /*
  * ArrowComponent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.components;
+package com.shackledmc.physics.components;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -29,13 +29,13 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
-import com.wolvencraft.morephysics.metrics.PluginMetrics;
-import com.wolvencraft.morephysics.metrics.PluginMetrics.Graph;
-import com.wolvencraft.morephysics.util.Experimental;
-import com.wolvencraft.morephysics.util.Message;
-import com.wolvencraft.morephysics.util.Experimental.ParticleEffectType;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.metrics.PluginMetrics;
+import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.util.Experimental;
+import com.shackledmc.physics.util.Message;
+import com.shackledmc.physics.util.Experimental.ParticleEffectType;
 
 /**
  * Arrow damage component.
@@ -54,12 +54,12 @@ public class ArrowComponent extends Component implements Listener {
         if(!enabled) return;
         
         HitArea.clearCache();
-        effects = MorePhysics.getInstance().getConfig().getBoolean("arrows.effects");
+        effects = Physics.getInstance().getConfig().getBoolean("arrows.effects");
     }
     
     @Override
     public void onEnable() {
-        if(effects && !MorePhysics.isCraftBukkitCompatible()) {
+        if(effects && !Physics.isCraftBukkitCompatible()) {
             Message.log(
                     "|  |- Particle effects are not compatible with  |",
                     "|     your CraftBukkit version. Disabling...    |"
@@ -67,7 +67,7 @@ public class ArrowComponent extends Component implements Listener {
             effects = false;
         }
         
-        Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(this, Physics.getInstance());
     }
     
     @Override
@@ -148,7 +148,7 @@ public class ArrowComponent extends Component implements Listener {
         }
         
         private void refresh() {
-            modifier = MorePhysics.getInstance().getConfig().getDouble("arrows.modifiers." + key);
+            modifier = Physics.getInstance().getConfig().getDouble("arrows.modifiers." + key);
         }
         
         public static void clearCache() {

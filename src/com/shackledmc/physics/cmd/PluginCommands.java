@@ -1,7 +1,7 @@
 /*
  * PluginCommands.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,18 +18,18 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.cmd;
+package com.shackledmc.physics.cmd;
 
 import java.util.List;
 
 import org.bukkit.ChatColor;
 
-import com.wolvencraft.morephysics.CommandManager;
-import com.wolvencraft.morephysics.CommandManager.Command;
-import com.wolvencraft.morephysics.CommandManager.CommandPair;
-import com.wolvencraft.morephysics.Configuration;
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.util.Message;
+import com.shackledmc.physics.CommandManager;
+import com.shackledmc.physics.Configuration;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.CommandManager.Command;
+import com.shackledmc.physics.CommandManager.CommandPair;
+import com.shackledmc.physics.util.Message;
 
 public class PluginCommands {
     
@@ -43,8 +43,8 @@ public class PluginCommands {
             description = "Reloads plugin configuration from the database"
             )
     public static boolean reload(List<String> args) {
-        MorePhysics.getComponentManager().disable();
-        MorePhysics.getComponentManager().enable();
+        Physics.getComponentManager().disable();
+        Physics.getComponentManager().enable();
         Configuration.clearCache();
         Message.send("Plugin configuration has been reloaded");
         return false;

@@ -1,7 +1,7 @@
 /*
  * BloodComponent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.components;
+package com.shackledmc.physics.components;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,12 +34,12 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
-import com.wolvencraft.morephysics.metrics.PluginMetrics;
-import com.wolvencraft.morephysics.metrics.PluginMetrics.Graph;
-import com.wolvencraft.morephysics.util.Experimental;
-import com.wolvencraft.morephysics.util.Message;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.metrics.PluginMetrics;
+import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.util.Experimental;
+import com.shackledmc.physics.util.Message;
 
 /**
  * Blood component.
@@ -60,7 +60,7 @@ public class BloodComponent extends Component implements Listener {
     
     @Override
     public void onEnable() {
-        if(!MorePhysics.isCraftBukkitCompatible()) {
+        if(!Physics.isCraftBukkitCompatible()) {
             Message.log(
                     "|  |- Component is not compatible with your     |",
                     "|     CraftBukkit version. Disabling...         |",
@@ -70,7 +70,7 @@ public class BloodComponent extends Component implements Listener {
             return;
         }
         
-        Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(this, Physics.getInstance());
     }
     
     @Override
@@ -137,7 +137,7 @@ public class BloodComponent extends Component implements Listener {
         }
         
         private void refresh() {
-            color = BloodColor.get(MorePhysics.getInstance().getConfig().getString("blood.modifiers." + key + "-color"));
+            color = BloodColor.get(Physics.getInstance().getConfig().getString("blood.modifiers." + key + "-color"));
         }
         
         public static void clearCache() {

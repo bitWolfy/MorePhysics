@@ -1,38 +1,38 @@
 name: MorePhysics
-main: com.wolvencraft.morephysics.MorePhysics
-website: http://dev.bukkit.org/bukkit-plugins/morephysics/
+main: com.shackledmc.physics.Physics
+website: http://dev.bukkit.org/bukkit-plugins/physics/
 version: 2.3.0
 authors: [FriedTaco, bitWolfy]
 permissions:
-    morephysics.*:
+    physics.*:
         description: Applies the effects of MorePhysics to players
         default: false
         children:
-            morephysics.arrows: true
-            morephysics.blood: true
-            morephysics.boats: true
-            morephysics.minecarts: true
-            morephysics.pistons: true
-            morephysics.weight: true
-    morephysics.arrows:
+            physics.arrows: true
+            physics.blood: true
+            physics.boats: true
+            physics.minecarts: true
+            physics.pistons: true
+            physics.weight: true
+    physics.arrows:
         description: Enables body part-specific critical damage
         default: false
-    morephysics.blood:
+    physics.blood:
         description: Enables blood particle effects
         default: false
-    morephysics.boats:
+    physics.boats:
         description: Enables boats sinking when receiving damage
         default: false
-    morephysics.minecarts:
+    physics.minecarts:
         description: Enables damage dealt by moving minecarts
         default: false
-    morephysics.pistons:
+    physics.pistons:
         description: Enables launchy pistons
         default: false
-    morephysics.player:
+    physics.player:
         description: Enables player rate modifications
         default: false
-    morephysics.weight:
+    physics.weight:
         description: Enables inventory weight
         default: false
           

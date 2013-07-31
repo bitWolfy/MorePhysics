@@ -1,7 +1,7 @@
 /*
  * CommandManager.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics;
+package com.shackledmc.physics;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -37,9 +37,9 @@ import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
-import com.wolvencraft.morephysics.cmd.PluginCommands;
-import com.wolvencraft.morephysics.util.ExceptionHandler;
-import com.wolvencraft.morephysics.util.Message;
+import com.shackledmc.physics.cmd.PluginCommands;
+import com.shackledmc.physics.util.ExceptionHandler;
+import com.shackledmc.physics.util.Message;
 
 public class CommandManager {
     

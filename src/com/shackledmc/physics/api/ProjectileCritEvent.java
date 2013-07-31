@@ -1,7 +1,7 @@
 /*
  * ProjectileCritEvent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.api;
+package com.shackledmc.physics.api;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,8 +27,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
-import com.wolvencraft.morephysics.components.ArrowComponent.HitArea;
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.components.ArrowComponent.HitArea;
 
 /**
  * An event thrown when a player receives a critical hit

@@ -1,7 +1,7 @@
 /*
  * ExceptionHandler.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,16 +18,16 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.util;
+package com.shackledmc.physics.util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import com.wolvencraft.morephysics.CommandManager.CommandPair;
-import com.wolvencraft.morephysics.Configuration;
-import com.wolvencraft.morephysics.MorePhysics;
+import com.shackledmc.physics.Configuration;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.CommandManager.CommandPair;
 
 public class ExceptionHandler {
     
@@ -56,7 +56,7 @@ public class ExceptionHandler {
             else lastError = t.getClass().getName();
         }
         
-        PluginDescriptionFile description = MorePhysics.getInstance().getDescription();
+        PluginDescriptionFile description = Physics.getInstance().getDescription();
         Message.log(
                 "+--------------- [ MorePhysics ] ---------------+",
                 "| The plugin 'MorePhysics' has caused an error.",
@@ -96,7 +96,7 @@ public class ExceptionHandler {
         
         Message.send(sender, ChatColor.RED + "An internal error occurred while executing the command");
         
-        PluginDescriptionFile description = MorePhysics.getInstance().getDescription();
+        PluginDescriptionFile description = Physics.getInstance().getDescription();
         String alias = "";
         for(String str : command.getProperties().alias()) {
             alias += str + " ";

@@ -1,7 +1,7 @@
 /*
  * Configuration.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,9 +18,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics;
+package com.shackledmc.physics;
 
-import com.wolvencraft.morephysics.util.ExceptionHandler;
+import com.shackledmc.physics.util.ExceptionHandler;
 
 
 /**
@@ -133,7 +133,7 @@ public enum Configuration {
      * Updates the cached node value
      */
     private void updateCache() {
-        cachedValue = MorePhysics.getInstance().getConfig().get(node);
+        cachedValue = Physics.getInstance().getConfig().get(node);
         cached = true;
     }
     

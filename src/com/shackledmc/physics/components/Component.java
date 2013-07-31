@@ -1,7 +1,7 @@
 /*
  * Component.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,15 +18,15 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.components;
+package com.shackledmc.physics.components;
 
 import java.util.List;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.metrics.PluginMetrics;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.metrics.PluginMetrics;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public abstract class Component {
     public Component(ComponentType type) {
         this.type = type;
         
-        FileConfiguration configFile = MorePhysics.getInstance().getConfig();
+        FileConfiguration configFile = Physics.getInstance().getConfig();
         enabled = configFile.getBoolean(type.getConfigKey() + ".enabled");
         exemptWorlds = configFile.getStringList(type.getConfigKey() + ".exempt-worlds");
     }

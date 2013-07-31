@@ -1,7 +1,7 @@
 /*
  * WeightComponent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.components;
+package com.shackledmc.physics.components;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,12 +47,12 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
-import com.wolvencraft.morephysics.metrics.PluginMetrics;
-import com.wolvencraft.morephysics.metrics.PluginMetrics.Graph;
-import com.wolvencraft.morephysics.util.Message;
-import com.wolvencraft.morephysics.util.Util;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.metrics.PluginMetrics;
+import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.util.Message;
+import com.shackledmc.physics.util.Util;
 
 /**
  * Weight component.
@@ -86,7 +86,7 @@ public class WeightComponent extends Component implements Listener {
         
         defaultWeight = getWeightData().getDouble("default");
         
-        FileConfiguration configFile = MorePhysics.getInstance().getConfig();
+        FileConfiguration configFile = Physics.getInstance().getConfig();
         
         speedMultiplyer = configFile.getDouble("weight.speed-modifier") * SPEED_MODIFIER_RATIO;
         defaultSpeed = configFile.getDouble("weight.default-speed") * DEFAULT_SPEED_RATIO;
@@ -98,7 +98,7 @@ public class WeightComponent extends Component implements Listener {
     
     @Override
     public void onEnable() {
-        if(!new File(MorePhysics.getInstance().getDataFolder(), "weight.yml").exists()) {
+        if(!new File(Physics.getInstance().getDataFolder(), "weight.yml").exists()) {
             Message.log("|  |- weight.yml not found, copying it over.    |");
             getWeightData().options().copyDefaults(true);
             saveWeightData();
@@ -118,7 +118,7 @@ public class WeightComponent extends Component implements Listener {
         
         Message.log("|  |- Loaded material weight: " + Message.fillString(count + " entries", 18) + "|");
         
-        Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(this, Physics.getInstance());
     }
     
     @Override
@@ -237,10 +237,10 @@ public class WeightComponent extends Component implements Listener {
      * Reloads the weight configuration from file
      */
     private void reloadWeightData() {        
-        if (weightDataFile == null) weightDataFile = new File(MorePhysics.getInstance().getDataFolder(), "weight.yml");
+        if (weightDataFile == null) weightDataFile = new File(Physics.getInstance().getDataFolder(), "weight.yml");
         weightData = YamlConfiguration.loadConfiguration(weightDataFile);
         
-        InputStream defConfigStream = MorePhysics.getInstance().getResource("weight.yml");
+        InputStream defConfigStream = Physics.getInstance().getResource("weight.yml");
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
             weightData.setDefaults(defConfig);
@@ -320,7 +320,7 @@ public class WeightComponent extends Component implements Listener {
         
         for(ItemStack armor : inventory.getArmorContents()) totalWeight += getStackWeight(armor);
         
-        player.setMetadata("weight", new FixedMetadataValue(MorePhysics.getInstance(), totalWeight));
+        player.setMetadata("weight", new FixedMetadataValue(Physics.getInstance(), totalWeight));
         
         return totalWeight;
     }

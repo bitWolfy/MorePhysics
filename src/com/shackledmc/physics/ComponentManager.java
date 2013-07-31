@@ -1,7 +1,7 @@
 /*
  * ComponentManager.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics;
+package com.shackledmc.physics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +27,17 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import com.wolvencraft.morephysics.components.ArrowComponent;
-import com.wolvencraft.morephysics.components.BloodComponent;
-import com.wolvencraft.morephysics.components.BoatComponent;
-import com.wolvencraft.morephysics.components.Component;
-import com.wolvencraft.morephysics.components.MinecartComponent;
-import com.wolvencraft.morephysics.components.PistonComponent;
-import com.wolvencraft.morephysics.components.PlayerComponent;
-import com.wolvencraft.morephysics.components.WeightComponent;
-import com.wolvencraft.morephysics.metrics.PluginMetrics;
-import com.wolvencraft.morephysics.util.ExceptionHandler;
-import com.wolvencraft.morephysics.util.Message;
+import com.shackledmc.physics.components.ArrowComponent;
+import com.shackledmc.physics.components.BloodComponent;
+import com.shackledmc.physics.components.BoatComponent;
+import com.shackledmc.physics.components.Component;
+import com.shackledmc.physics.components.MinecartComponent;
+import com.shackledmc.physics.components.PistonComponent;
+import com.shackledmc.physics.components.PlayerComponent;
+import com.shackledmc.physics.components.WeightComponent;
+import com.shackledmc.physics.metrics.PluginMetrics;
+import com.shackledmc.physics.util.ExceptionHandler;
+import com.shackledmc.physics.util.Message;
 
 /**
  * Handles components that are enabled during plugin startup
@@ -56,7 +56,7 @@ public class ComponentManager {
      * Enables the components
      */
     public void enable() {
-        PluginMetrics metrics = MorePhysics.getStatistics().getMetrics();
+        PluginMetrics metrics = Physics.getStatistics().getMetrics();
         
         for(ComponentType component : ComponentType.values()) {
             try { components.add(component.component.newInstance()); }

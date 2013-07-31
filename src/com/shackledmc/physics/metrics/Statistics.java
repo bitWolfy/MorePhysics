@@ -1,7 +1,7 @@
 /*
- * MorePhysicsEvent.java
+ * Statistics.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,25 +18,36 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.api;
+package com.shackledmc.physics.metrics;
+
+import java.io.IOException;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import org.bukkit.event.Event;
-
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.util.Message;
 
 /**
- * An abstract event called by MorePhysics
+ * Statistics collection module
+ * 
  * @author bitWolfy
  *
  */
-@AllArgsConstructor(access=AccessLevel.PUBLIC)
 @Getter(AccessLevel.PUBLIC)
-public abstract class MorePhysicsEvent extends Event {
+public class Statistics {
     
-    private ComponentType component;
+    private PluginMetrics metrics;
+    
+    public Statistics(Physics plugin) {
+        try { metrics = new PluginMetrics(plugin); }
+        catch (IOException e) { Message.log("| [X] PluginMetrics has failed to load          |"); }
+    }
+    
+    public void start() {
+        if(metrics == null) return;
+        metrics.start();
+        Message.log("| [X] PluginMetrics has started                 |");
+    }
     
 }

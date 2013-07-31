@@ -1,7 +1,7 @@
 /*
  * Experimental.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.util;
+package com.shackledmc.physics.util;
 
 import java.lang.reflect.Field;
 

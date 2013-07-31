@@ -1,7 +1,7 @@
 /*
  * PistonComponent.java
  * 
- * MorePhysics
+ * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-package com.wolvencraft.morephysics.components;
+package com.shackledmc.physics.components;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -41,14 +41,14 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import com.wolvencraft.morephysics.Configuration;
-import com.wolvencraft.morephysics.MorePhysics;
-import com.wolvencraft.morephysics.ComponentManager.ComponentType;
-import com.wolvencraft.morephysics.metrics.PluginMetrics;
-import com.wolvencraft.morephysics.metrics.PluginMetrics.Graph;
-import com.wolvencraft.morephysics.util.Experimental;
-import com.wolvencraft.morephysics.util.Message;
-import com.wolvencraft.morephysics.util.Experimental.ParticleEffectType;
+import com.shackledmc.physics.Configuration;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.metrics.PluginMetrics;
+import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.util.Experimental;
+import com.shackledmc.physics.util.Message;
+import com.shackledmc.physics.util.Experimental.ParticleEffectType;
 
 /**
  * Piston component.
@@ -74,7 +74,7 @@ public class PistonComponent extends Component implements Listener {
         
         LaunchPower.clearCache();
         
-        FileConfiguration configFile = MorePhysics.getInstance().getConfig();
+        FileConfiguration configFile = Physics.getInstance().getConfig();
         calculatePlayerWeight = configFile.getBoolean("pistons.weight.enabled");
         weightModifier = configFile.getDouble("pistons.weight.modifier") * WeightComponent.SPEED_MODIFIER_RATIO;
         effects = configFile.getBoolean("pistons.effects");
@@ -83,7 +83,7 @@ public class PistonComponent extends Component implements Listener {
     
     @Override
     public void onEnable() {
-        if(effects && !MorePhysics.isCraftBukkitCompatible()) {
+        if(effects && !Physics.isCraftBukkitCompatible()) {
             Message.log(
                     "|  |- Particle effects are not compatible with  |",
                     "|  |  your CraftBukkit version. Disabling...    |"
@@ -92,7 +92,7 @@ public class PistonComponent extends Component implements Listener {
         }
         
         if(calculatePlayerWeight
-                && !MorePhysics.getComponentManager().isComponentEnabled(ComponentType.WEIGHT)) {
+                && !Physics.getComponentManager().isComponentEnabled(ComponentType.WEIGHT)) {
             Message.log(
                     "|  |- WeightComponent is disabled - cannot      |",
                     "|  |  calculate player weight into velocity     |"
@@ -100,7 +100,7 @@ public class PistonComponent extends Component implements Listener {
             calculatePlayerWeight = false;
         }
         
-        Bukkit.getServer().getPluginManager().registerEvents(this, MorePhysics.getInstance());
+        Bukkit.getServer().getPluginManager().registerEvents(this, Physics.getInstance());
     }
     
     @Override
@@ -174,7 +174,7 @@ public class PistonComponent extends Component implements Listener {
         
         WeightComponent weightComponent = null;
         if(calculatePlayerWeight)
-            weightComponent = (WeightComponent) MorePhysics.getComponentManager().getComponent(ComponentType.WEIGHT);
+            weightComponent = (WeightComponent) Physics.getComponentManager().getComponent(ComponentType.WEIGHT);
         
         for(Entity pushedEntity : event.getBlock().getChunk().getEntities()) {
             if(!isEntityNearby(pushedEntity, pushedBlock.getLocation())) continue;
@@ -254,7 +254,7 @@ public class PistonComponent extends Component implements Listener {
             this.block = block;
             this.blocks = blocks;
             this.direction = direction;
-            task = Bukkit.getScheduler().runTaskTimer(MorePhysics.getInstance(), this, delay, 1L);
+            task = Bukkit.getScheduler().runTaskTimer(Physics.getInstance(), this, delay, 1L);
         }
         
         @Override
@@ -286,7 +286,7 @@ public class PistonComponent extends Component implements Listener {
         }
         
         private void refresh() {
-            power = MorePhysics.getInstance().getConfig().getDouble("pistons.power." + key);
+            power = Physics.getInstance().getConfig().getDouble("pistons.power." + key);
         }
         
         public static void clearCache() {
