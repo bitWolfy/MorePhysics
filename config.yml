@@ -74,4 +74,5 @@ weight:
     recalculate-when-walking: false
 misc:
     debug: false
+    movement-fix: true
     prefix: "[MorePhysics]"

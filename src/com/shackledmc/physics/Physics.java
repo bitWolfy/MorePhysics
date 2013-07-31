@@ -27,7 +27,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.shackledmc.physics.metrics.Statistics;
-import com.shackledmc.physics.util.Experimental;
 import com.shackledmc.physics.util.Message;
 
 public class Physics extends JavaPlugin {
@@ -59,6 +58,16 @@ public class Physics extends JavaPlugin {
         metrics.start();
         
         new CommandManager();
+        
+        if(Configuration.MovementFix.toBoolean()) {
+            if(isCraftBukkitCompatible()) {
+                new com.shackledmc.physics.util.Experimental();
+                Message.log("| [X] Movement fix has been enabled             |");
+            }
+            else Message.log(
+                    "| [X] Movement fix is not compatible with your  |",
+                    "      version of CraftBukkit. Disabled...       |");
+        }
         
         Message.log(
                 "| [X] MorePhysics is enabled                    |",
@@ -111,7 +120,7 @@ public class Physics extends JavaPlugin {
      * @return <b>true</b> if CB versions match, <b>false</b> otherwise
      */
     public static boolean isCraftBukkitCompatible() {
-        try { return Experimental.craftBukkitCompatible(); }
+        try { return com.shackledmc.physics.util.Experimental.craftBukkitCompatible(); }
         catch(Throwable t) { return false; }
     }
 }

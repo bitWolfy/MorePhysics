@@ -31,6 +31,7 @@ import com.shackledmc.physics.util.ExceptionHandler;
 public enum Configuration {
     
     Debug               ("misc.debug"),
+    MovementFix         ("misc.movement-fix"),
     Prefix              ("misc.prefix"),
     ;
     
