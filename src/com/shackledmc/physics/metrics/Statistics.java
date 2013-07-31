@@ -26,6 +26,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.metrics.PluginMetrics.Graph;
 import com.shackledmc.physics.util.Message;
 
 /**
@@ -42,6 +43,26 @@ public class Statistics {
     public Statistics(Physics plugin) {
         try { metrics = new PluginMetrics(plugin); }
         catch (IOException e) { Message.log("| [X] PluginMetrics has failed to load          |"); }
+        
+        Graph pluginTypeGraph = metrics.createGraph("Plugin Type");
+        
+        pluginTypeGraph.addPlotter(new PluginMetrics.Plotter("Full") {
+
+            @Override
+            public int getValue() {
+                return 1;
+            }
+
+        });
+        
+        pluginTypeGraph.addPlotter(new PluginMetrics.Plotter("Lite") {
+
+            @Override
+            public int getValue() {
+                return 0;
+            }
+
+        });
     }
     
     public void start() {
