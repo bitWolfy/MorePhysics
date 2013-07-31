@@ -127,7 +127,7 @@ public class ArrowComponent extends Component implements Listener {
         event.setDamage(event.getDamage() * hitArea.modifier);
     }
     
-    private enum HitArea {
+    public enum HitArea {
         
         HEAD    ("head"),
         NECK    ("neck"),
