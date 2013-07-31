@@ -50,7 +50,7 @@ public class Statistics {
 
             @Override
             public int getValue() {
-                return 1;
+                return 0;
             }
 
         });
@@ -59,7 +59,7 @@ public class Statistics {
 
             @Override
             public int getValue() {
-                return 0;
+                return 1;
             }
 
         });
