@@ -144,22 +144,27 @@ public class PistonComponent extends Component implements Listener {
         
         if(event.getBlocks().isEmpty() || LaunchPower.BLOCKS.power == 0.0) return;
         
-        if(signControlled && !checkForSign(event.getBlock())) return;
+        double power = LaunchPower.BLOCKS.power;
+        if(signControlled) {
+            double overridePower = -1;
+            try { overridePower = getControllingSign(event.getBlock()); }
+            catch (NoSignFoundException ex) { return; }
+            if(overridePower != -1) power = overridePower;
+        }
         
         List<Block> pushedBlocks = new LinkedList<Block>(event.getBlocks());
         Collections.reverse(pushedBlocks);
         BlockFace direction = event.getDirection();
         
-        double pushDistance = LaunchPower.BLOCKS.power;
-        if(direction.equals(BlockFace.UP)) pushDistance *= 0.75;
-        else if(direction.equals(BlockFace.DOWN)) pushDistance *= 1.50;
+        if(direction.equals(BlockFace.UP)) power *= 0.75;
+        else if(direction.equals(BlockFace.DOWN)) power *= 1.50;
         
         int i = 0;
         for(Block block : pushedBlocks) {
             if(!block.getType().equals(Material.SAND) && !block.getType().equals(Material.GRAVEL)) break;
             PistonBlockLaunchEvent apiEvent = new PistonBlockLaunchEvent(
                     event.getBlock(),
-                    new LaunchedBlock(block, direction, pushDistance, i));
+                    new LaunchedBlock(block, direction, power, i));
             Bukkit.getPluginManager().callEvent(apiEvent);
             i++;
         }
@@ -173,12 +178,18 @@ public class PistonComponent extends Component implements Listener {
         
         if(LaunchPower.ENTITIES.power == 0.0) return;
 
-        if(signControlled && !checkForSign(event.getBlock())) return;
+        double power = LaunchPower.ENTITIES.power;
+        if(signControlled) {
+            double overridePower = -1;
+            try { overridePower = getControllingSign(event.getBlock()); }
+            catch (NoSignFoundException ex) { return; }
+            if(overridePower != -1) power = overridePower;
+        }
 
         BlockFace direction = event.getDirection();
         Block pushedBlock = event.getBlock().getRelative(event.getDirection());
         Vector velocity = new Vector(direction.getModX(), direction.getModY(), direction.getModZ());
-        velocity.multiply(LaunchPower.ENTITIES.power);
+        velocity.multiply(power);
         
         WeightComponent weightComponent = null;
         if(calculatePlayerWeight)
@@ -243,15 +254,19 @@ public class PistonComponent extends Component implements Listener {
      * @param block Block to check
      * @return <b>true</b> if there is a valid sign, <b>false</b> otherwise
      */
-    private boolean checkForSign(Block block) {
+    private double getControllingSign(Block block) throws NoSignFoundException {
         for(BlockFace direction : DIRECTIONS) {
             Block relBlock = block.getRelative(direction);
             if(!(relBlock instanceof Sign)) continue;
-            Sign sign = (Sign) relBlock;
-            if(sign.getLine(0).equalsIgnoreCase(Configuration.Prefix.toString())
-                    && sign.getLine(1).equalsIgnoreCase("piston")) return true;
+            String[] lines = ((Sign) relBlock).getLines();
+            if(lines.length > 2 || lines.length < 1) continue;
+            if(!lines[0].equalsIgnoreCase(Configuration.Prefix.toString())) continue;
+            if(lines.length == 2) {
+                try { return Double.parseDouble(lines[1]); }
+                catch (Throwable t) { return -1; }
+            } else return -1;
         }
-        return false;
+        throw new NoSignFoundException("No applicable sign found");
     }
     
     @Getter(AccessLevel.PUBLIC)
@@ -303,6 +318,16 @@ public class PistonComponent extends Component implements Listener {
         
         public static void clearCache() {
             for(LaunchPower area : LaunchPower.values()) area.refresh();
+        }
+        
+    }
+    
+    private static class NoSignFoundException extends Exception {
+        
+        private static final long serialVersionUID = -4897081746992527847L;
+
+        public NoSignFoundException(String message) {
+            super(message);
         }
         
     }
