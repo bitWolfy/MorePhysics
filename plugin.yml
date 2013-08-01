@@ -13,6 +13,7 @@ permissions:
         children:
             physics.cmd.*: true
             physics.arrows: true
+            physics.blocks: true
             physics.blood: true
             physics.boats: true
             physics.minecarts: true
@@ -32,6 +33,9 @@ permissions:
         default: op
     physics.arrows:
         description: Enables body part-specific critical damage
+        default: false
+    physics.blocks:
+        description: Enables physics-related blocks
         default: false
     physics.blood:
         description: Enables blood particle effects

@@ -10,6 +10,23 @@ arrows:
         toes: 3
         unknown: 1
     effects: true
+blocks:
+    enabled: true
+    exempt-worlds: []
+    types:
+        speed-up:
+            enabled: true
+            material: '35:1'
+            velocity: 1.0
+        slow-down:
+            enabled: true
+            material: '35:13'
+            velocity: 1.0
+        bounce:
+           enabled: true
+           material: '35:3'
+           velocity: 1.0
+    effects: true
 blood:
     enabled: true
     exempt-worlds: []

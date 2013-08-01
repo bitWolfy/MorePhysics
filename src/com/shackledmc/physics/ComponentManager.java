@@ -28,6 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import com.shackledmc.physics.components.ArrowComponent;
+import com.shackledmc.physics.components.BlocksComponent;
 import com.shackledmc.physics.components.BloodComponent;
 import com.shackledmc.physics.components.BoatComponent;
 import com.shackledmc.physics.components.Component;
@@ -115,6 +116,7 @@ public class ComponentManager {
     public enum ComponentType {
         
         ARROW           ("arrows", ArrowComponent.class, "physics.arrows"),
+        BLOCKS          ("blocks", BlocksComponent.class, "physics.blocks"),
         BLOOD           ("blood", BloodComponent.class, "physics.blood"),
         BOAT            ("boats", BoatComponent.class, "physics.boats"),
         MINECART        ("minecarts", MinecartComponent.class, "physics.minecarts"),
