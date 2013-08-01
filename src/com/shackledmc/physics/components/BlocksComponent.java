@@ -149,11 +149,7 @@ public class BlocksComponent extends Component implements Listener {
             }
         }
         
-        
-        Message.log("Velocity before: " + player.getVelocity().length());
-        Message.log(type.name()); //XXX
         player.setVelocity(playerVelocity);
-        Message.log("Velocity after: " + player.getVelocity().length());
     }
     
     private enum BlockType {
