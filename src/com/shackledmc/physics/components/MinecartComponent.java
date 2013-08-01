@@ -122,7 +122,6 @@ public class MinecartComponent extends Component implements Listener {
         });
     }
     
-    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onMinecartMove(VehicleMoveEvent event) {
         Vehicle vehicle = event.getVehicle();
@@ -151,8 +150,7 @@ public class MinecartComponent extends Component implements Listener {
                 if(!victim.hasPermission(type.getPermission())) continue;
                 
                 // Process damage handling
-                // TODO Turn the damage value into a double
-                int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.PLAYERS.modifier));
+                double damageValue = event.getVehicle().getVelocity().length() * (10 * MinecartModifier.PLAYERS.modifier);
                 
                 EntityDamageEvent damage = new EntityDamageByEntityEvent(vehicle, victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
                 Bukkit.getPluginManager().callEvent(damage);
@@ -189,7 +187,7 @@ public class MinecartComponent extends Component implements Listener {
                 
             } else if(victimEntity instanceof Animals) {
                 // Process damage
-                int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.ANIMALS.modifier));
+                double damageValue = event.getVehicle().getVelocity().length() * (10 * MinecartModifier.ANIMALS.modifier);
                 
                 EntityDamageEvent damage = new EntityDamageByEntityEvent(vehicle, victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
                 Bukkit.getPluginManager().callEvent(damage);
@@ -210,7 +208,7 @@ public class MinecartComponent extends Component implements Listener {
 
             } else if(victimEntity instanceof Monster || victimEntity instanceof Slime) {
                 // Process damage
-                int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.MOBS.modifier));
+                double damageValue = event.getVehicle().getVelocity().length() * (10 * MinecartModifier.MOBS.modifier);
                 
                 EntityDamageEvent damage = new EntityDamageByEntityEvent(vehicle, victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
                 Bukkit.getPluginManager().callEvent(damage);
