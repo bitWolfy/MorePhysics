@@ -22,10 +22,13 @@ package com.shackledmc.physics.api;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import com.shackledmc.physics.ComponentManager.ComponentType;
 import com.shackledmc.physics.components.ArrowComponent.HitArea;
@@ -36,7 +39,7 @@ import com.shackledmc.physics.components.ArrowComponent.HitArea;
  *
  */
 @Getter(AccessLevel.PUBLIC)
-public class ProjectileCritEvent extends PhysicsEvent {
+public class ProjectileCritEvent extends PhysicsEvent implements Cancellable {
     
     private static final HandlerList handlers = new HandlerList();
     
@@ -45,13 +48,18 @@ public class ProjectileCritEvent extends PhysicsEvent {
     private HitArea area;
     private double damage;
     
-    public ProjectileCritEvent(Entity damager, Player damagee, HitArea area, double damage) {
+    @Setter(AccessLevel.PUBLIC)
+    private boolean cancelled;
+    
+    public ProjectileCritEvent(EntityDamageByEntityEvent event, HitArea area) {
         super(ComponentType.ARROW);
         
-        this.damager = damager;
-        this.damagee = damagee;
+        this.damager = event.getDamager();
+        this.damagee = (Player) event.getEntity();
         this.area = area;
-        this.damage = damage;
+        this.damage = event.getDamage() * area.getModifier();
+        
+        cancelled = false;
     }
 
     @Override

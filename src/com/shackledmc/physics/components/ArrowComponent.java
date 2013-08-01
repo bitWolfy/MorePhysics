@@ -20,6 +20,9 @@
 
 package com.shackledmc.physics.components;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -31,6 +34,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.api.ProjectileCritEvent;
 import com.shackledmc.physics.metrics.PluginMetrics;
 import com.shackledmc.physics.metrics.PluginMetrics.Graph;
 import com.shackledmc.physics.util.Experimental;
@@ -120,6 +124,10 @@ public class ArrowComponent extends Component implements Listener {
         else if(diff <= 0.17 && diff > 0) hitArea = HitArea.TOE;
         else hitArea = HitArea.UNKNOWN;
         
+        ProjectileCritEvent apiEvent = new ProjectileCritEvent(event, hitArea);
+        Bukkit.getServer().getPluginManager().callEvent(apiEvent);
+        if(apiEvent.isCancelled()) return;
+        
         if(effects && (hitArea.equals(HitArea.HEAD) || hitArea.equals(HitArea.NECK) || hitArea.equals(HitArea.CROTCH))) {
             Experimental.createEffect(ParticleEffectType.CRIT, "", event.getEntity().getLocation(), 1f, 1f, 1f, 20);
         }
@@ -127,6 +135,12 @@ public class ArrowComponent extends Component implements Listener {
         event.setDamage(event.getDamage() * hitArea.modifier);
     }
     
+    /**
+     * Represents the area that was hit by a projectile
+     * @author bitWolfy
+     *
+     */
+    @Getter(AccessLevel.PUBLIC)
     public enum HitArea {
         
         HEAD    ("head"),

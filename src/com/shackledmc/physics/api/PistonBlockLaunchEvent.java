@@ -1,5 +1,5 @@
 /*
- * MinecartHitEvent.java
+ * PistonBlockLaunchEvent.java
  * 
  * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
@@ -20,47 +20,38 @@
 
 package com.shackledmc.physics.api;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.event.Cancellable;
+import lombok.AccessLevel;
+import lombok.Getter;
+
+import org.bukkit.block.Block;
 import org.bukkit.event.HandlerList;
 
 import com.shackledmc.physics.ComponentManager.ComponentType;
-
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import com.shackledmc.physics.components.PistonComponent.LaunchedBlock;
 
 /**
- * An event thrown when a minecart hits an entity
+ * An event thrown when a power piston launches a block
  * @author bitWolfy
  *
  */
 @Getter(AccessLevel.PUBLIC)
-public class MinecartHitEvent extends PhysicsEvent implements Cancellable {
+public class PistonBlockLaunchEvent extends PhysicsEvent {
     
     private static final HandlerList handlers = new HandlerList();
     
-    private Minecart minecart;
-    private Entity entity;
-    private double damage;
+    private Block piston;
+    private LaunchedBlock launchedBlock;
     
-    @Setter(AccessLevel.PUBLIC)
-    private boolean cancelled;
-    
-    public MinecartHitEvent(Vehicle minecart, Entity entity, double damage) {
-        super(ComponentType.MINECART);
+    public PistonBlockLaunchEvent(Block piston, LaunchedBlock launchedBlock) {
+        super(ComponentType.PISTON);
         
-        this.minecart = (Minecart) minecart;
-        this.entity = entity;
-        this.damage = damage;
-        
-        cancelled = false;
+        this.piston = piston;
+        this.launchedBlock = launchedBlock;
     }
 
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
+    
 }

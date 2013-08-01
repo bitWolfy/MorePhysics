@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -44,6 +47,8 @@ import org.bukkit.util.Vector;
 import com.shackledmc.physics.Configuration;
 import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.api.PistonBlockLaunchEvent;
+import com.shackledmc.physics.api.PistonEntityLaunchEvent;
 import com.shackledmc.physics.metrics.PluginMetrics;
 import com.shackledmc.physics.metrics.PluginMetrics.Graph;
 import com.shackledmc.physics.util.Experimental;
@@ -152,7 +157,10 @@ public class PistonComponent extends Component implements Listener {
         int i = 0;
         for(Block block : pushedBlocks) {
             if(!block.getType().equals(Material.SAND) && !block.getType().equals(Material.GRAVEL)) break;
-            new LaunchedBlock(block, direction, pushDistance, i);
+            PistonBlockLaunchEvent apiEvent = new PistonBlockLaunchEvent(
+                    event.getBlock(),
+                    new LaunchedBlock(block, direction, pushDistance, i));
+            Bukkit.getPluginManager().callEvent(apiEvent);
             i++;
         }
         
@@ -190,11 +198,14 @@ public class PistonComponent extends Component implements Listener {
                     double weight = weightComponent.getPlayerWeight(player);
                     velocity.subtract(velocity.clone().multiply(weight * weightModifier));
                 }
-                
-                pushedEntity.setVelocity(entityVelocity.add(velocity));
-            } else {
-                pushedEntity.setVelocity(entityVelocity.add(velocity));
             }
+            
+            entityVelocity = entityVelocity.add(velocity);
+            PistonEntityLaunchEvent apiEvent = new PistonEntityLaunchEvent(event.getBlock(), pushedEntity, entityVelocity);
+            Bukkit.getPluginManager().callEvent(apiEvent);
+            if(apiEvent.isCancelled()) continue;
+            
+            pushedEntity.setVelocity(entityVelocity);
         }
         
         if(effects) Experimental.createEffect(ParticleEffectType.EXPLODE, "", event.getBlock().getLocation(), 1f, 1f, 1f, 20);
@@ -243,6 +254,7 @@ public class PistonComponent extends Component implements Listener {
         return false;
     }
     
+    @Getter(AccessLevel.PUBLIC)
     public static class LaunchedBlock implements Runnable {
         
         private BukkitTask task;

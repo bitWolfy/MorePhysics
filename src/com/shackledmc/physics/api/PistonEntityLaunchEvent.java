@@ -1,5 +1,5 @@
 /*
- * MinecartHitEvent.java
+ * PistonEntityLaunchEvent.java
  * 
  * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors
@@ -20,41 +20,41 @@
 
 package com.shackledmc.physics.api;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Minecart;
-import org.bukkit.entity.Vehicle;
-import org.bukkit.event.Cancellable;
-import org.bukkit.event.HandlerList;
-
-import com.shackledmc.physics.ComponentManager.ComponentType;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.HandlerList;
+import org.bukkit.util.Vector;
+
+import com.shackledmc.physics.ComponentManager.ComponentType;
+
 /**
- * An event thrown when a minecart hits an entity
+ * An event thrown when a power piston launches an entity
  * @author bitWolfy
  *
  */
 @Getter(AccessLevel.PUBLIC)
-public class MinecartHitEvent extends PhysicsEvent implements Cancellable {
+public class PistonEntityLaunchEvent extends PhysicsEvent implements Cancellable {
     
     private static final HandlerList handlers = new HandlerList();
     
-    private Minecart minecart;
+    private Block piston;
     private Entity entity;
-    private double damage;
+    private Vector velocity;
     
     @Setter(AccessLevel.PUBLIC)
     private boolean cancelled;
     
-    public MinecartHitEvent(Vehicle minecart, Entity entity, double damage) {
-        super(ComponentType.MINECART);
+    public PistonEntityLaunchEvent(Block piston, Entity entity, Vector velocity) {
+        super(ComponentType.PISTON);
         
-        this.minecart = (Minecart) minecart;
+        this.piston = piston;
         this.entity = entity;
-        this.damage = damage;
+        this.velocity = velocity;
         
         cancelled = false;
     }
@@ -63,4 +63,5 @@ public class MinecartHitEvent extends PhysicsEvent implements Cancellable {
     public HandlerList getHandlers() {
         return handlers;
     }
+    
 }

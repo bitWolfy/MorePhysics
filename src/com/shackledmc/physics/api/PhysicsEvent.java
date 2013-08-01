@@ -1,5 +1,5 @@
 /*
- * MorePhysicsEvent.java
+ * PhysicsEvent.java
  * 
  * Physics
  * Copyright (C) 2013 FriedTaco, bitWolfy, and contributors

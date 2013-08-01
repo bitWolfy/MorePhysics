@@ -47,6 +47,7 @@ import org.bukkit.util.Vector;
 
 import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.api.MinecartHitEvent;
 import com.shackledmc.physics.metrics.PluginMetrics;
 import com.shackledmc.physics.metrics.PluginMetrics.Graph;
 import com.shackledmc.physics.util.Experimental;
@@ -150,10 +151,17 @@ public class MinecartComponent extends Component implements Listener {
                 if(!victim.hasPermission(type.getPermission())) continue;
                 
                 // Process damage handling
+                // TODO Turn the damage value into a double
                 int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.PLAYERS.modifier));
+                
                 EntityDamageEvent damage = new EntityDamageByEntityEvent(vehicle, victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
                 Bukkit.getPluginManager().callEvent(damage);
                 if(damage.isCancelled()) continue;
+                
+                MinecartHitEvent apiEvent = new MinecartHitEvent(vehicle, victimEntity, damageValue);
+                Bukkit.getPluginManager().callEvent(apiEvent);
+                if(apiEvent.isCancelled()) continue;
+                
                 victim.damage(damageValue);
                 
                 // Process death message handling
@@ -182,9 +190,15 @@ public class MinecartComponent extends Component implements Listener {
             } else if(victimEntity instanceof Animals) {
                 // Process damage
                 int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.ANIMALS.modifier));
+                
                 EntityDamageEvent damage = new EntityDamageByEntityEvent(vehicle, victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
                 Bukkit.getPluginManager().callEvent(damage);
                 if(damage.isCancelled()) continue;
+                
+                MinecartHitEvent apiEvent = new MinecartHitEvent(vehicle, victimEntity, damageValue);
+                Bukkit.getPluginManager().callEvent(apiEvent);
+                if(apiEvent.isCancelled()) continue;
+                
                 victimEntity.damage(damageValue);
                 
                 // Process knockback
@@ -197,9 +211,15 @@ public class MinecartComponent extends Component implements Listener {
             } else if(victimEntity instanceof Monster || victimEntity instanceof Slime) {
                 // Process damage
                 int damageValue = (int) (event.getVehicle().getVelocity().length() * (10 * MinecartModifier.MOBS.modifier));
+                
                 EntityDamageEvent damage = new EntityDamageByEntityEvent(vehicle, victimEntity, DamageCause.ENTITY_ATTACK, damageValue);
                 Bukkit.getPluginManager().callEvent(damage);
                 if(damage.isCancelled()) continue;
+                
+                MinecartHitEvent apiEvent = new MinecartHitEvent(vehicle, victimEntity, damageValue);
+                Bukkit.getPluginManager().callEvent(apiEvent);
+                if(apiEvent.isCancelled()) continue;
+                
                 victimEntity.damage(damageValue);
                 
                 // Process knockback
