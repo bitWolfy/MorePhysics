@@ -81,7 +81,7 @@ public class ArrowComponent extends Component implements Listener {
     
     @Override
     public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("Arrow Component Enabled");
+        Graph componentGraph = metrics.createGraph("component.arrow.enabled");
         
         componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
 

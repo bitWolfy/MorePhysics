@@ -84,7 +84,7 @@ public class BoatComponent extends Component implements Listener {
     
     @Override
     public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("Boat Component Enabled");
+        Graph componentGraph = metrics.createGraph("component.boat.enabled");
         
         componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
 

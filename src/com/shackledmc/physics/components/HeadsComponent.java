@@ -73,7 +73,7 @@ public class HeadsComponent extends Component implements Listener {
     
     @Override
     public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("Heads Component Enabled");
+        Graph componentGraph = metrics.createGraph("component.heads.enabled");
         
         componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
 

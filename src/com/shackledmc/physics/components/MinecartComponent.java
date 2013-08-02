@@ -99,7 +99,7 @@ public class MinecartComponent extends Component implements Listener {
     
     @Override
     public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("Minecart Component Enabled");
+        Graph componentGraph = metrics.createGraph("component.minecart.enabled");
         
         componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
 

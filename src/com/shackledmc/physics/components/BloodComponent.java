@@ -80,7 +80,7 @@ public class BloodComponent extends Component implements Listener {
     
     @Override
     public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("Blood Component Enabled");
+        Graph componentGraph = metrics.createGraph("component.blood.enabled");
         
         componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
 

@@ -84,7 +84,7 @@ public class BlocksComponent extends Component implements Listener {
     
     @Override
     public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("Blocks Component Enabled");
+        Graph componentGraph = metrics.createGraph("component.blocks.enabled");
         
         componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
 

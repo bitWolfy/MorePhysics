@@ -70,7 +70,7 @@ public class PlayerComponent extends Component implements Listener {
     
     @Override
     public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("Player Component Enabled");
+        Graph componentGraph = metrics.createGraph("component.player.enabled");
         
         componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
 
