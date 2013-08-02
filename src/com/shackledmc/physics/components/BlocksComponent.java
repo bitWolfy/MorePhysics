@@ -23,14 +23,18 @@ package com.shackledmc.physics.components;
 import net.minecraft.server.v1_6_R2.Material;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.material.MaterialData;
 import org.bukkit.util.Vector;
 
@@ -51,6 +55,8 @@ import com.shackledmc.physics.util.Util;
  *
  */
 public class BlocksComponent extends Component implements Listener {
+
+    private boolean affectVehicles;
     
     private boolean effects;
     
@@ -62,6 +68,8 @@ public class BlocksComponent extends Component implements Listener {
         BlockType.clearCache();
         
         FileConfiguration configFile = Physics.getInstance().getConfig();
+        effects = configFile.getBoolean("blocks.affect-vehicles");
+        
         effects = configFile.getBoolean("blocks.effects");
     }
     
@@ -109,47 +117,73 @@ public class BlocksComponent extends Component implements Listener {
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
-        final Player player = event.getPlayer();
+        Player player = event.getPlayer();
         if(!player.hasPermission(type.getPermission())) return;
         
         BlockState blockUnder = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getState();
         if(blockUnder.getType().equals(Material.AIR)) return;
         
-        final BlockType type = BlockType.get(blockUnder.getData());
+        BlockType type = BlockType.get(blockUnder.getData());
         if(type == null) return;
         
-        Vector playerVelocity = player.getVelocity().clone();
+        processVelocity(player, type, blockUnder.getLocation());
+    }
+    
+    @EventHandler
+    public void onVehicleMove(VehicleMoveEvent event) {
+        if(!affectVehicles) return;
         
-        switch(type) {
+        Vehicle vehicle = event.getVehicle();
+        
+        BlockState blockUnder = vehicle.getLocation().getBlock().getRelative(BlockFace.DOWN).getState();
+        if(blockUnder.getType().equals(Material.AIR)) return;
+        
+        BlockType type = BlockType.get(blockUnder.getData());
+        if(type == null) return;
+        
+        processVelocity(vehicle, type, blockUnder.getLocation());
+        
+    }
+    
+    /**
+     * Performs the necessary calculations for the entity velocity
+     * @param entity Entity to process
+     * @param blockUnder Block type
+     * @param blockLocation Block location
+     */
+    private void processVelocity(Entity entity, BlockType blockUnder, Location blockLocation) {
+        Vector velocity = entity.getVelocity().clone();
+        
+        switch(blockUnder) {
             case SPEED_UP: {
-                playerVelocity = playerVelocity.add(player.getLocation().getDirection().multiply(1.01));
+                velocity = velocity.add(entity.getLocation().getDirection().multiply(1.01));
                 
                 if(effects) {
-                    Experimental.createEffect(ParticleEffectType.LARGE_SMOKE, "", blockUnder.getLocation(), 0, 0, 5F, 1);
+                    Experimental.createEffect(ParticleEffectType.LARGE_SMOKE, "", blockLocation, 0, 0, 5F, 1);
                 }
                 break;
             }
             
             case SLOW_DOWN: {
-                playerVelocity = playerVelocity.subtract(player.getLocation().getDirection().multiply(0.05));
+                velocity = velocity.subtract(entity.getLocation().getDirection().multiply(0.05));
                 
                 if(effects) {
-                    Experimental.createEffect(ParticleEffectType.ENCHANTMENT_TABLE, "", blockUnder.getLocation(), 0, 0, 5F, 1);
+                    Experimental.createEffect(ParticleEffectType.ENCHANTMENT_TABLE, "", blockLocation, 0, 0, 5F, 1);
                 }
                 break;
             }
             
             case BOUNCE: {
-                playerVelocity = playerVelocity.add(new Vector(0, 0.5 * type.velocity, 0));
+                velocity = velocity.add(new Vector(0, 0.5 * blockUnder.velocity, 0));
                 
                 if(effects) {
-                    Experimental.createEffect(ParticleEffectType.LAVA, "", blockUnder.getLocation(), 0, 0, 5F, 10);
+                    Experimental.createEffect(ParticleEffectType.LAVA, "", blockLocation, 0, 0, 5F, 10);
                 }
                 break;
             }
         }
         
-        player.setVelocity(playerVelocity);
+        entity.setVelocity(velocity);
     }
     
     private enum BlockType {

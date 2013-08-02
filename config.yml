@@ -13,6 +13,7 @@ arrows:
 blocks:
     enabled: true
     exempt-worlds: []
+    affect-vehicles: true
     types:
         speed-up:
             enabled: true
