@@ -39,6 +39,9 @@ boats:
     exempt-worlds: []
     damage-multiplyer: 1.0
     effects: true
+heads:
+    enabled: true
+    chance: 1.0
 minecarts:
     enabled: true
     exempt-worlds: []

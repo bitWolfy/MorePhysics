@@ -16,6 +16,7 @@ permissions:
             physics.blocks: true
             physics.blood: true
             physics.boats: true
+            physics.heads: true
             physics.minecarts: true
             physics.pistons: true
             physics.weight: true
@@ -42,6 +43,9 @@ permissions:
         default: false
     physics.boats:
         description: Enables boats sinking when receiving damage
+        default: false
+    physics.heads:
+        description: Enables players dropping skulls on death
         default: false
     physics.minecarts:
         description: Enables damage dealt by moving minecarts

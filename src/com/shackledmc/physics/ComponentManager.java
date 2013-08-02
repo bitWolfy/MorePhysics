@@ -32,6 +32,7 @@ import com.shackledmc.physics.components.BlocksComponent;
 import com.shackledmc.physics.components.BloodComponent;
 import com.shackledmc.physics.components.BoatComponent;
 import com.shackledmc.physics.components.Component;
+import com.shackledmc.physics.components.HeadsComponent;
 import com.shackledmc.physics.components.MinecartComponent;
 import com.shackledmc.physics.components.PistonComponent;
 import com.shackledmc.physics.components.PlayerComponent;
@@ -119,6 +120,7 @@ public class ComponentManager {
         BLOCKS          ("blocks", BlocksComponent.class, "physics.blocks"),
         BLOOD           ("blood", BloodComponent.class, "physics.blood"),
         BOAT            ("boats", BoatComponent.class, "physics.boats"),
+        HEADS           ("heads", HeadsComponent.class, "physics.heads"),
         MINECART        ("minecarts", MinecartComponent.class, "physics.minecarts"),
         PISTON          ("pistons", PistonComponent.class, "physics.pistons"),
         PLAYER          ("player", PlayerComponent.class, "physics.player"),
