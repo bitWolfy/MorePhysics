@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
@@ -110,12 +111,18 @@ public class BloodComponent extends Component implements Listener {
         
         Entity entity = event.getEntity();
         if(entity instanceof Player) {
+            if(!BloodModifier.PLAYERS.enabled) return;
+            
             Experimental.createBlockEffect(entity.getLocation(), BloodModifier.PLAYERS.color.blockId);
             Experimental.createBlockEffect(entity.getLocation(), BloodColor.GLITTER.blockId);
         } else if(entity instanceof Animals) {
+            if(!BloodModifier.ANIMALS.enabled) return;
+            
             Experimental.createBlockEffect(entity.getLocation(), BloodModifier.ANIMALS.color.blockId);
             Experimental.createBlockEffect(entity.getLocation(), BloodColor.GLITTER.blockId);
         } else if(entity instanceof Monster || entity instanceof Slime) {
+            if(!BloodModifier.MOBS.enabled) return;
+            
             Experimental.createBlockEffect(entity.getLocation(), BloodModifier.MOBS.color.blockId);
             Experimental.createBlockEffect(entity.getLocation(), BloodColor.GLITTER.blockId);
             
@@ -130,6 +137,8 @@ public class BloodComponent extends Component implements Listener {
         ;
         
         private String key;
+        
+        private boolean enabled;
         private BloodColor color;
         
         BloodModifier(String key) {
@@ -137,7 +146,12 @@ public class BloodComponent extends Component implements Listener {
         }
         
         private void refresh() {
-            color = BloodColor.get(Physics.getInstance().getConfig().getString("blood.modifiers." + key + "-color"));
+            FileConfiguration configFile = Physics.getInstance().getConfig();
+            
+            enabled = configFile.getBoolean("blood.types." + key + ".enabled");
+            
+            color = BloodColor.get(configFile.getString("blood.types." + key + ".color"));
+            if(color == null) enabled = false;
         }
         
         public static void clearCache() {

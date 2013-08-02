@@ -30,10 +30,16 @@ blocks:
 blood:
     enabled: true
     exempt-worlds: []
-    modifiers:
-        players-color: red
-        mobs-color: green
-        animals-color: red
+    types:
+        players:
+            enabled: true
+            color: red
+        mobs:
+            enabled: true
+            color: green
+        animals:
+            enabled: true
+            color: red_alt
 boats:
     enabled: true
     exempt-worlds: []
