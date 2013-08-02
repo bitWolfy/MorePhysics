@@ -131,7 +131,7 @@ public class WeightComponent extends Component implements Listener {
     
     @Override
     public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("Weight Component Enabled");
+        Graph componentGraph = metrics.createGraph("component.weight.enabled");
         
         componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
 

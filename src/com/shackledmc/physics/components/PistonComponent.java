@@ -110,7 +110,7 @@ public class PistonComponent extends Component implements Listener {
     
     @Override
     public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("Piston Component Enabled");
+        Graph componentGraph = metrics.createGraph("component.piston.enabled");
         
         componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
 
