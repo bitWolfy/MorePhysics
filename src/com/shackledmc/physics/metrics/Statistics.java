@@ -44,7 +44,7 @@ public class Statistics {
         try { metrics = new PluginMetrics(plugin); }
         catch (IOException e) { Message.log("| [X] PluginMetrics has failed to load          |"); }
         
-        Graph pluginTypeGraph = metrics.createGraph("Plugin Type");
+        Graph pluginTypeGraph = metrics.createGraph("plugin.type");
         
         pluginTypeGraph.addPlotter(new PluginMetrics.Plotter("Full") {
 
