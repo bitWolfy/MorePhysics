@@ -14,6 +14,7 @@ blocks:
     enabled: true
     exempt-worlds: []
     affect-vehicles: true
+    cancel-fall-damage: false
     types:
         speed-up:
             enabled: true

@@ -20,10 +20,9 @@
 
 package com.shackledmc.physics.components;
 
-import net.minecraft.server.v1_6_R2.Material;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,9 +32,13 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.material.MaterialData;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import com.shackledmc.physics.Physics;
@@ -55,8 +58,11 @@ import com.shackledmc.physics.util.Util;
  *
  */
 public class BlocksComponent extends Component implements Listener {
-
+    
+    private static final String cancelFallDamageMetaKey = "physics.component.blocks.cancelFallDamage";
+    
     private boolean affectVehicles;
+    private boolean cancelFallDamage;
     
     private boolean effects;
     
@@ -69,6 +75,7 @@ public class BlocksComponent extends Component implements Listener {
         
         FileConfiguration configFile = Physics.getInstance().getConfig();
         effects = configFile.getBoolean("blocks.affect-vehicles");
+        effects = configFile.getBoolean("blocks.cancel-fall-damage");
         
         effects = configFile.getBoolean("blocks.effects");
     }
@@ -117,7 +124,7 @@ public class BlocksComponent extends Component implements Listener {
     
     @EventHandler(ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if(!player.hasPermission(type.getPermission())) return;
         
         BlockState blockUnder = player.getLocation().getBlock().getRelative(BlockFace.DOWN).getState();
@@ -127,6 +134,19 @@ public class BlocksComponent extends Component implements Listener {
         if(type == null) return;
         
         processVelocity(player, type, blockUnder.getLocation());
+        
+        if(!cancelFallDamage) return;
+        
+        player.setMetadata(cancelFallDamageMetaKey, new FixedMetadataValue(Physics.getInstance(), true));
+        Bukkit.getScheduler().runTaskLater(Physics.getInstance(), new Runnable() {
+            
+            @Override
+            public void run() {
+                if(player != null && player.hasMetadata(cancelFallDamageMetaKey))
+                    player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+            }
+            
+        }, 60L);
     }
     
     @EventHandler
@@ -143,6 +163,48 @@ public class BlocksComponent extends Component implements Listener {
         
         processVelocity(vehicle, type, blockUnder.getLocation());
         
+        if(!cancelFallDamage
+                || !(vehicle.getPassenger() instanceof Player)) return;
+        
+        final Player player = (Player) vehicle.getPassenger();
+        
+        player.setMetadata(cancelFallDamageMetaKey, new FixedMetadataValue(Physics.getInstance(), true));
+        Bukkit.getScheduler().runTaskLater(Physics.getInstance(), new Runnable() {
+            
+            @Override
+            public void run() {
+                if(player != null && player.hasMetadata(cancelFallDamageMetaKey))
+                    player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+            }
+            
+        }, 60L);
+        
+    }
+    
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if(!cancelFallDamage
+                || !event.getCause().equals(DamageCause.FALL)
+                || !(event.getEntity() instanceof Player)) return;
+        
+        Player player = (Player) event.getEntity();
+
+        if(!player.hasPermission(type.getPermission())) return;
+        
+        if(player.hasMetadata(cancelFallDamageMetaKey)) {
+            player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+        }
+    }
+    
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        if(!cancelFallDamage) return;
+        
+        Player player = event.getPlayer();
+        
+        if(player.hasMetadata(cancelFallDamageMetaKey)) {
+            player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+        }
     }
     
     /**
