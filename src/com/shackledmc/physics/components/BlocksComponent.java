@@ -75,7 +75,7 @@ public class BlocksComponent extends Component implements Listener {
         
         FileConfiguration configFile = Physics.getInstance().getConfig();
         effects = configFile.getBoolean("blocks.affect-vehicles");
-        effects = configFile.getBoolean("blocks.cancel-fall-damage");
+        cancelFallDamage = configFile.getBoolean("blocks.cancel-fall-damage");
         
         effects = configFile.getBoolean("blocks.effects");
     }
