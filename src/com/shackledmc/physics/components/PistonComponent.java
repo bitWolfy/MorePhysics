@@ -41,6 +41,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
@@ -64,10 +68,13 @@ import com.shackledmc.physics.util.Experimental.ParticleEffectType;
  */
 public class PistonComponent extends Component implements Listener {
     
+    private static final String cancelFallDamageMetaKey = "physics.component.pistons.cancelFallDamage";
     private static final BlockFace[] DIRECTIONS = { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
     
     private boolean calculatePlayerWeight;
     private double weightModifier;
+    
+    private boolean cancelFallDamage;
     
     private boolean signControlled;
     private boolean effects;
@@ -82,8 +89,11 @@ public class PistonComponent extends Component implements Listener {
         FileConfiguration configFile = Physics.getInstance().getConfig();
         calculatePlayerWeight = configFile.getBoolean("pistons.weight.enabled");
         weightModifier = configFile.getDouble("pistons.weight.modifier") * WeightComponent.SPEED_MODIFIER_RATIO;
-        effects = configFile.getBoolean("pistons.effects");
+        
+        cancelFallDamage = configFile.getBoolean("pistons.cancel-fall-damage");
+        
         signControlled = configFile.getBoolean("pistons.sign-controlled");
+        effects = configFile.getBoolean("pistons.effects");
     }
     
     @Override
@@ -201,13 +211,28 @@ public class PistonComponent extends Component implements Listener {
             Vector entityVelocity = pushedEntity.getVelocity().clone();
             
             if(pushedEntity instanceof Player) {
-                Player player = (Player) pushedEntity;
+                final Player player = (Player) pushedEntity;
                 if(!player.hasPermission(type.getPermission())) continue;
                 
                 if(calculatePlayerWeight
                         && player.hasPermission(ComponentType.WEIGHT.getPermission())) {
                     double weight = weightComponent.getPlayerWeight(player);
                     velocity.subtract(velocity.clone().multiply(weight * weightModifier));
+                }
+                
+                if(cancelFallDamage) {
+                
+                    player.setMetadata(cancelFallDamageMetaKey, new FixedMetadataValue(Physics.getInstance(), true));
+                    Bukkit.getScheduler().runTaskLater(Physics.getInstance(), new Runnable() {
+                        
+                        @Override
+                        public void run() {
+                            if(player != null && player.hasMetadata(cancelFallDamageMetaKey))
+                                player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+                        }
+                        
+                    }, 60L);
+                
                 }
             }
             
@@ -220,6 +245,32 @@ public class PistonComponent extends Component implements Listener {
         }
         
         if(effects) Experimental.createEffect(ParticleEffectType.EXPLODE, "", event.getBlock().getLocation(), 1f, 1f, 1f, 20);
+    }
+    
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if(!cancelFallDamage
+                || !event.getCause().equals(DamageCause.FALL)
+                || !(event.getEntity() instanceof Player)) return;
+        
+        Player player = (Player) event.getEntity();
+
+        if(!player.hasPermission(type.getPermission())) return;
+        
+        if(player.hasMetadata(cancelFallDamageMetaKey)) {
+            player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+        }
+    }
+    
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        if(!cancelFallDamage) return;
+        
+        Player player = event.getPlayer();
+        
+        if(player.hasMetadata(cancelFallDamageMetaKey)) {
+            player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+        }
     }
     
     /**
