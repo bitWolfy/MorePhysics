@@ -109,10 +109,11 @@ public class ComponentManager {
     @Getter(AccessLevel.PUBLIC)
     public enum ComponentType {
         
-        PISTON          ("pistons", PistonComponent.class, "physics.pistons"),
-        WEIGHT          ("weight", WeightComponent.class, "physics.weight"),
+        PISTON          ("component.pistons.enabled", "pistons", PistonComponent.class, "physics.pistons"),
+        WEIGHT          ("component.weight.enabled", "weight", WeightComponent.class, "physics.weight"),
         ;
-
+        
+        private String statsKey;
         private String configKey;
         private Class<? extends Component> component;
         private String permission;

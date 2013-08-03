@@ -22,14 +22,15 @@ package com.shackledmc.physics.components;
 
 import java.util.List;
 
-import org.bukkit.configuration.file.FileConfiguration;
-
-import com.shackledmc.physics.Physics;
-import com.shackledmc.physics.ComponentManager.ComponentType;
-import com.shackledmc.physics.metrics.PluginMetrics;
-
 import lombok.AccessLevel;
 import lombok.Getter;
+
+import org.bukkit.configuration.file.FileConfiguration;
+
+import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.Physics;
+import com.shackledmc.physics.metrics.PluginMetrics;
+import com.shackledmc.physics.metrics.PluginMetrics.Graph;
 
 @Getter(AccessLevel.PUBLIC)
 public abstract class Component {
@@ -74,7 +75,22 @@ public abstract class Component {
     /**
      * Initializes the plugin statistic
      */
-    public void statsInit(PluginMetrics metrics) {
+    public final void statsInit(PluginMetrics metrics) {
+        Graph statusGraph = metrics.createGraph(type.getStatsKey());
+        
+        statusGraph.addPlotters(
+                new PluginMetrics.Plotter("Enabled") {
+                    @Override public int getValue() { return enabled ? 1 : 0; }
+                },
+                new PluginMetrics.Plotter("Disabled") {
+                    @Override public int getValue() { return !enabled ? 1 : 0; }
+                }
+        );
+        
+        onStatsInit(metrics);
+    }
+    
+    public void onStatsInit(PluginMetrics metrics) {
         
     }
 }

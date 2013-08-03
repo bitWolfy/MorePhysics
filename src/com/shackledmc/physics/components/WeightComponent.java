@@ -47,10 +47,8 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.ComponentManager.ComponentType;
-import com.shackledmc.physics.metrics.PluginMetrics;
-import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.util.Message;
 import com.shackledmc.physics.util.Util;
 
@@ -127,31 +125,6 @@ public class WeightComponent extends Component implements Listener {
         
         for(Player player : Bukkit.getServer().getOnlinePlayers())
             setPlayerSpeed(player, getDefaultPlayerSpeed());
-    }
-    
-    @Override
-    public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("component.weight.enabled");
-        
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
-
-            @Override
-            public int getValue() {
-                if(enabled) return 1;
-                else return 0;
-            }
-
-        });
-
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Disabled") {
-
-            @Override
-            public int getValue() {
-                if(!enabled) return 1;
-                else return 0;
-            }
-
-        });
     }
     
     @EventHandler
