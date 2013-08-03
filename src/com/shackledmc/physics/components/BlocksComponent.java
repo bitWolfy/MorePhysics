@@ -41,10 +41,8 @@ import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.ComponentManager.ComponentType;
-import com.shackledmc.physics.metrics.PluginMetrics;
-import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.util.Experimental;
 import com.shackledmc.physics.util.Experimental.ParticleEffectType;
 import com.shackledmc.physics.util.Message;
@@ -95,31 +93,6 @@ public class BlocksComponent extends Component implements Listener {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
-    }
-    
-    @Override
-    public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("component.blocks.enabled");
-        
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
-
-            @Override
-            public int getValue() {
-                if(enabled) return 1;
-                else return 0;
-            }
-
-        });
-
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Disabled") {
-
-            @Override
-            public int getValue() {
-                if(!enabled) return 1;
-                else return 0;
-            }
-
-        });
     }
     
     @EventHandler(ignoreCancelled = true)

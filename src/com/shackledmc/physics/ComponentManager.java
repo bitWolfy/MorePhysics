@@ -115,16 +115,17 @@ public class ComponentManager {
     @Getter(AccessLevel.PUBLIC)
     public enum ComponentType {
         
-        ARROW           ("arrows", ArrowComponent.class, "physics.arrows"),
-        BLOCKS          ("blocks", BlocksComponent.class, "physics.blocks"),
-        BLOOD           ("blood", BloodComponent.class, "physics.blood"),
-        BOAT            ("boats", BoatComponent.class, "physics.boats"),
-        MINECART        ("minecarts", MinecartComponent.class, "physics.minecarts"),
-        PISTON          ("pistons", PistonComponent.class, "physics.pistons"),
-        PLAYER          ("player", PlayerComponent.class, "physics.player"),
-        WEIGHT          ("weight", WeightComponent.class, "physics.weight"),
+        ARROW           ("component.arrow.enabled", "arrows", ArrowComponent.class, "physics.arrows"),
+        BLOCKS          ("component.blocks.enabled", "blocks", BlocksComponent.class, "physics.blocks"),
+        BLOOD           ("component.blood.enabled", "blood", BloodComponent.class, "physics.blood"),
+        BOAT            ("component.boat.enabled", "boats", BoatComponent.class, "physics.boats"),
+        MINECART        ("component.minecart.enabled", "minecarts", MinecartComponent.class, "physics.minecarts"),
+        PISTON          ("component.pistons.enabled", "pistons", PistonComponent.class, "physics.pistons"),
+        PLAYER          ("component.player.enabled", "player", PlayerComponent.class, "physics.player"),
+        WEIGHT          ("component.weight.enabled", "weight", WeightComponent.class, "physics.weight"),
         ;
-
+        
+        private String statsKey;
         private String configKey;
         private Class<? extends Component> component;
         private String permission;

@@ -36,10 +36,8 @@ import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
-import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.ComponentManager.ComponentType;
-import com.shackledmc.physics.metrics.PluginMetrics;
-import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.util.Experimental;
 import com.shackledmc.physics.util.Message;
 
@@ -80,31 +78,6 @@ public class BoatComponent extends Component implements Listener {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
-    }
-    
-    @Override
-    public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("component.boat.enabled");
-        
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
-
-            @Override
-            public int getValue() {
-                if(enabled) return 1;
-                else return 0;
-            }
-
-        });
-
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Disabled") {
-
-            @Override
-            public int getValue() {
-                if(!enabled) return 1;
-                else return 0;
-            }
-
-        });
     }
     
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

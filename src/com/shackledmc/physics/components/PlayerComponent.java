@@ -36,10 +36,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 
-import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.ComponentManager.ComponentType;
-import com.shackledmc.physics.metrics.PluginMetrics;
-import com.shackledmc.physics.metrics.PluginMetrics.Graph;
+import com.shackledmc.physics.Physics;
 
 /**
  * Player component.
@@ -66,31 +64,6 @@ public class PlayerComponent extends Component implements Listener {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
-    }
-    
-    @Override
-    public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("component.player.enabled");
-        
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
-
-            @Override
-            public int getValue() {
-                if(enabled) return 1;
-                else return 0;
-            }
-
-        });
-
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Disabled") {
-
-            @Override
-            public int getValue() {
-                if(!enabled) return 1;
-                else return 0;
-            }
-
-        });
     }
     
     @EventHandler

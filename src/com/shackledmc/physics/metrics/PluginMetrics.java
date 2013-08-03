@@ -651,6 +651,15 @@ public class PluginMetrics {
         public void addPlotter(final Plotter plotter) {
             plotters.add(plotter);
         }
+
+        /**
+         * Add several plotters to the graph, which will be used to plot entries
+         *
+         * @param plotters plotters to add to the graph
+         */
+        public void addPlotters(final Plotter... plotters) {
+            for(Plotter plotter : plotters) this.plotters.add(plotter);
+        }
  
         /**
          * Remove a plotter from the graph

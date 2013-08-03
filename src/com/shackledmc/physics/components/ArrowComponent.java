@@ -32,14 +32,12 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.ComponentManager.ComponentType;
+import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.api.ProjectileCritEvent;
-import com.shackledmc.physics.metrics.PluginMetrics;
-import com.shackledmc.physics.metrics.PluginMetrics.Graph;
 import com.shackledmc.physics.util.Experimental;
-import com.shackledmc.physics.util.Message;
 import com.shackledmc.physics.util.Experimental.ParticleEffectType;
+import com.shackledmc.physics.util.Message;
 
 /**
  * Arrow damage component.
@@ -77,31 +75,6 @@ public class ArrowComponent extends Component implements Listener {
     @Override
     public void onDisable() {
         HandlerList.unregisterAll(this);
-    }
-    
-    @Override
-    public void statsInit(PluginMetrics metrics) {
-        Graph componentGraph = metrics.createGraph("component.arrow.enabled");
-        
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Enabled") {
-
-            @Override
-            public int getValue() {
-                if(enabled) return 1;
-                else return 0;
-            }
-
-        });
-
-        componentGraph.addPlotter(new PluginMetrics.Plotter("Disabled") {
-
-            @Override
-            public int getValue() {
-                if(!enabled) return 1;
-                else return 0;
-            }
-
-        });
     }
     
     @EventHandler(priority = EventPriority.HIGH)
