@@ -2,6 +2,7 @@ pistons:
     enabled: true
     exempt-worlds: []
     sign-controlled: false
+    cancel-fall-damage: false;
     weight:
         enabled: true
         modifier: 1.0

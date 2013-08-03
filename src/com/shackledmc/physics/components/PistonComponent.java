@@ -24,6 +24,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -38,6 +41,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
@@ -57,10 +64,13 @@ import com.shackledmc.physics.util.Message;
  */
 public class PistonComponent extends Component implements Listener {
     
+    private static final String cancelFallDamageMetaKey = "physics.component.pistons.cancelFallDamage";
     private static final BlockFace[] DIRECTIONS = { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
     
     private boolean calculatePlayerWeight;
     private double weightModifier;
+    
+    private boolean cancelFallDamage;
     
     private boolean signControlled;
     private boolean effects;
@@ -75,8 +85,11 @@ public class PistonComponent extends Component implements Listener {
         FileConfiguration configFile = Physics.getInstance().getConfig();
         calculatePlayerWeight = configFile.getBoolean("pistons.weight.enabled");
         weightModifier = configFile.getDouble("pistons.weight.modifier") * WeightComponent.SPEED_MODIFIER_RATIO;
-        effects = configFile.getBoolean("pistons.effects");
+        
+        cancelFallDamage = configFile.getBoolean("pistons.cancel-fall-damage");
+        
         signControlled = configFile.getBoolean("pistons.sign-controlled");
+        effects = configFile.getBoolean("pistons.effects");
     }
     
     @Override
@@ -112,20 +125,26 @@ public class PistonComponent extends Component implements Listener {
         
         if(event.getBlocks().isEmpty() || LaunchPower.BLOCKS.power == 0.0) return;
         
-        if(signControlled && !checkForSign(event.getBlock())) return;
+        double power = LaunchPower.BLOCKS.power;
+        if(signControlled) {
+            double overridePower = -1;
+            try { overridePower = getControllingSign(event.getBlock()); }
+            catch (NoSignFoundException ex) { return; }
+            if(overridePower != -1) power = overridePower;
+        }
         
         List<Block> pushedBlocks = new LinkedList<Block>(event.getBlocks());
         Collections.reverse(pushedBlocks);
         BlockFace direction = event.getDirection();
         
-        double pushDistance = LaunchPower.BLOCKS.power;
-        if(direction.equals(BlockFace.UP)) pushDistance *= 0.75;
-        else if(direction.equals(BlockFace.DOWN)) pushDistance *= 1.50;
+        if(direction.equals(BlockFace.UP)) power *= 0.75;
+        else if(direction.equals(BlockFace.DOWN)) power *= 1.50;
         
         int i = 0;
         for(Block block : pushedBlocks) {
             if(!block.getType().equals(Material.SAND) && !block.getType().equals(Material.GRAVEL)) break;
-            new LaunchedBlock(block, direction, pushDistance, i);
+            new LaunchedBlock(block, direction, power, i);
+            // XXX Removed PhysicsAPI call
             i++;
         }
         
@@ -138,12 +157,18 @@ public class PistonComponent extends Component implements Listener {
         
         if(LaunchPower.ENTITIES.power == 0.0) return;
 
-        if(signControlled && !checkForSign(event.getBlock())) return;
+        double power = LaunchPower.ENTITIES.power;
+        if(signControlled) {
+            double overridePower = -1;
+            try { overridePower = getControllingSign(event.getBlock()); }
+            catch (NoSignFoundException ex) { return; }
+            if(overridePower != -1) power = overridePower;
+        }
 
         BlockFace direction = event.getDirection();
         Block pushedBlock = event.getBlock().getRelative(event.getDirection());
         Vector velocity = new Vector(direction.getModX(), direction.getModY(), direction.getModZ());
-        velocity.multiply(LaunchPower.ENTITIES.power);
+        velocity.multiply(power);
         
         WeightComponent weightComponent = null;
         if(calculatePlayerWeight)
@@ -155,7 +180,7 @@ public class PistonComponent extends Component implements Listener {
             Vector entityVelocity = pushedEntity.getVelocity().clone();
             
             if(pushedEntity instanceof Player) {
-                Player player = (Player) pushedEntity;
+                final Player player = (Player) pushedEntity;
                 if(!player.hasPermission(type.getPermission())) continue;
                 
                 if(calculatePlayerWeight
@@ -164,13 +189,54 @@ public class PistonComponent extends Component implements Listener {
                     velocity.subtract(velocity.clone().multiply(weight * weightModifier));
                 }
                 
-                pushedEntity.setVelocity(entityVelocity.add(velocity));
-            } else {
-                pushedEntity.setVelocity(entityVelocity.add(velocity));
+                if(cancelFallDamage) {
+                
+                    player.setMetadata(cancelFallDamageMetaKey, new FixedMetadataValue(Physics.getInstance(), true));
+                    Bukkit.getScheduler().runTaskLater(Physics.getInstance(), new Runnable() {
+                        
+                        @Override
+                        public void run() {
+                            if(player != null && player.hasMetadata(cancelFallDamageMetaKey))
+                                player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+                        }
+                        
+                    }, 60L);
+                
+                }
             }
+            
+            entityVelocity = entityVelocity.add(velocity);
+            // XXX Removed PhysicsAPI call
+            pushedEntity.setVelocity(entityVelocity);
         }
         
         if(effects) Experimental.createEffect(ParticleEffectType.EXPLODE, "", event.getBlock().getLocation(), 1f, 1f, 1f, 20);
+    }
+    
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if(!cancelFallDamage
+                || !event.getCause().equals(DamageCause.FALL)
+                || !(event.getEntity() instanceof Player)) return;
+        
+        Player player = (Player) event.getEntity();
+
+        if(!player.hasPermission(type.getPermission())) return;
+        
+        if(player.hasMetadata(cancelFallDamageMetaKey)) {
+            player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+        }
+    }
+    
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        if(!cancelFallDamage) return;
+        
+        Player player = event.getPlayer();
+        
+        if(player.hasMetadata(cancelFallDamageMetaKey)) {
+            player.removeMetadata(cancelFallDamageMetaKey, Physics.getInstance());
+        }
     }
     
     /**
@@ -205,17 +271,22 @@ public class PistonComponent extends Component implements Listener {
      * @param block Block to check
      * @return <b>true</b> if there is a valid sign, <b>false</b> otherwise
      */
-    private boolean checkForSign(Block block) {
+    private double getControllingSign(Block block) throws NoSignFoundException {
         for(BlockFace direction : DIRECTIONS) {
             Block relBlock = block.getRelative(direction);
             if(!(relBlock instanceof Sign)) continue;
-            Sign sign = (Sign) relBlock;
-            if(sign.getLine(0).equalsIgnoreCase(Configuration.Prefix.toString())
-                    && sign.getLine(1).equalsIgnoreCase("piston")) return true;
+            String[] lines = ((Sign) relBlock).getLines();
+            if(lines.length > 2 || lines.length < 1) continue;
+            if(!lines[0].equalsIgnoreCase(Configuration.Prefix.toString())) continue;
+            if(lines.length == 2) {
+                try { return Double.parseDouble(lines[1]); }
+                catch (Throwable t) { return -1; }
+            } else return -1;
         }
-        return false;
+        throw new NoSignFoundException("No applicable sign found");
     }
     
+    @Getter(AccessLevel.PUBLIC)
     public static class LaunchedBlock implements Runnable {
         
         private BukkitTask task;
@@ -264,6 +335,16 @@ public class PistonComponent extends Component implements Listener {
         
         public static void clearCache() {
             for(LaunchPower area : LaunchPower.values()) area.refresh();
+        }
+        
+    }
+    
+    private static class NoSignFoundException extends Exception {
+        
+        private static final long serialVersionUID = -4897081746992527847L;
+
+        public NoSignFoundException(String message) {
+            super(message);
         }
         
     }
