@@ -34,11 +34,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.material.MaterialData;
 
 import com.shackledmc.physics.ComponentManager.ComponentType;
 import com.shackledmc.physics.Physics;
 import com.shackledmc.physics.util.Experimental;
 import com.shackledmc.physics.util.Message;
+import com.shackledmc.physics.util.Util;
 
 /**
  * Blood component.
@@ -123,7 +125,7 @@ public class BloodComponent extends Component implements Listener {
             
             enabled = configFile.getBoolean("blood.types." + key + ".enabled");
             
-            color = BloodColor.get(configFile.getString("blood.types." + key + ".color"));
+            color = BloodColor.get(this, configFile.getString("blood.types." + key + ".color"));
             if(color == null) enabled = false;
         }
         
@@ -137,8 +139,9 @@ public class BloodComponent extends Component implements Listener {
         
         WHITE           ("white", 155),
         WHITE_ALT       ("white_alt", 42),
-        RED             ("red", 152),
+        RED             ("red", 331),
         RED_ALT         ("red_alt", 46),
+        RED_ALT_2       ("red_alt_2", 152),
         YELLOW          ("yellow", 41),
         YELLOW_ALT      ("yellow_alt", 42),
         BLUE            ("blue", 22),
@@ -146,16 +149,49 @@ public class BloodComponent extends Component implements Listener {
         GREEN           ("green", 133),
         GREEN_ALT       ("green_alt", 81),
         GLITTER         ("glitter", 20),
+        
+        CUSTOM_PLAYER   ("CUSTOM_PLAYER", 1),
+        CUSTOM_ANIMAL   ("CUSTOM_ANIMAL", 1),
+        CUSTOM_MOB      ("CUSTOM_MOB", 1),
         ;
         
         private String alias;
         private int blockId;
         
-        public static BloodColor get(String alias) {
+        public static BloodColor get(BloodModifier modifier, String alias) {
             for(BloodColor color : BloodColor.values()) {
                 if(color.alias.equalsIgnoreCase(alias)) return color;
             }
-            return BloodColor.RED;
+            
+            MaterialData customData = Util.getBlockMaterial(alias);
+            if(customData == null) return BloodColor.RED;
+            
+            BloodColor result;
+            switch(modifier) {
+                case PLAYERS: {
+                    result = BloodColor.CUSTOM_PLAYER;
+                    result.blockId = customData.getItemTypeId();
+                    break;
+                }
+                
+                case MOBS: {
+                    result = BloodColor.CUSTOM_MOB;
+                    result.blockId = customData.getItemTypeId();
+                    break;
+                }
+                
+                case ANIMALS: {
+                    result = BloodColor.CUSTOM_ANIMAL;
+                    result.blockId = customData.getItemTypeId();
+                    break;
+                }
+                
+                default: {
+                    result = BloodColor.RED;
+                }
+            }
+            
+            return result;
         }
         
     }
