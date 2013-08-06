@@ -51,13 +51,13 @@ public class ProjectileCritEvent extends PhysicsEvent implements Cancellable {
     @Setter(AccessLevel.PUBLIC)
     private boolean cancelled;
     
-    public ProjectileCritEvent(EntityDamageByEntityEvent event, HitArea area) {
+    public ProjectileCritEvent(EntityDamageByEntityEvent event, HitArea area, double damageModifier) {
         super(ComponentType.ARROW);
         
         this.damager = event.getDamager();
         this.damagee = (Player) event.getEntity();
         this.area = area;
-        this.damage = event.getDamage() * area.getModifier();
+        this.damage = event.getDamage() * damageModifier;
         
         cancelled = false;
     }

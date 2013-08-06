@@ -2,13 +2,34 @@ arrows:
     enabled: true
     exempt-worlds: []
     modifiers:
-        head: 3
-        neck: 4
-        torso: 2
-        crotch: 10
-        legs: 0.8
-        toes: 3
-        unknown: 1
+        head:
+            damage: 2.5
+            damage-range: 0.5
+            effects: []
+        neck:
+            damage: 3.0
+            damage-range: 0.5
+            effects: []
+        torso:
+            damage: 1.0
+            damage-range: 0.0
+            effects: []
+        crotch:
+            damage: 4.0
+            damage-range: 0.5
+            effects: []
+        legs:
+            damage: 1.5
+            damage-range: 0.5
+            effects: []
+        toes:
+            damage: 2.0
+            damage-range: 0.5
+            effects: []
+        unknown:
+            damage: 1.0
+            damage-range: 0.0
+            effects: []
     effects: true
 blocks:
     enabled: true

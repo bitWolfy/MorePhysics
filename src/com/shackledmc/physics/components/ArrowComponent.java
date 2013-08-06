@@ -20,10 +20,14 @@
 
 package com.shackledmc.physics.components;
 
-import lombok.AccessLevel;
-import lombok.Getter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -31,6 +35,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.shackledmc.physics.ComponentManager.ComponentType;
 import com.shackledmc.physics.Physics;
@@ -47,6 +53,19 @@ import com.shackledmc.physics.util.Message;
  *
  */
 public class ArrowComponent extends Component implements Listener {
+    
+    private static final EntityType[] VALID_ENTITIES = {
+        EntityType.BLAZE,
+        EntityType.CREEPER,
+        EntityType.IRON_GOLEM,
+        EntityType.PIG_ZOMBIE,
+        EntityType.PLAYER,
+        EntityType.SKELETON,
+        EntityType.SNOWMAN,
+        EntityType.VILLAGER,
+        EntityType.WITCH,
+        EntityType.WITHER
+    };
     
     private boolean effects;
     
@@ -79,25 +98,24 @@ public class ArrowComponent extends Component implements Listener {
     
     @EventHandler(priority = EventPriority.HIGH)
     public void onEntityDamage(EntityDamageByEntityEvent event) {
-        if(!(event.getDamager() instanceof Projectile)
-            || !(event.getEntity() instanceof Player)
-            || !((Player) event.getEntity()).hasPermission(type.getPermission())) return;
         
+        // Check whether the damaging entity is a projectile
+        if(!(event.getDamager() instanceof Projectile)) return;
+        
+        // Check for invalid worlds
         if(exemptWorlds.contains(event.getEntity().getWorld().getName())) return;
         
-        HitArea hitArea;
+        // Check whether the damaged entity type is valid (i.e. humanoid-ish)
+        if(!isTypeValid(event.getEntityType())) return;
         
-        double diff = event.getDamager().getLocation().getY() - event.getEntity().getLocation().getY();
+        // If the damaged entity is a player, check for permissions
+        if(event.getEntity() instanceof Player && !((Player) event.getEntity()).hasPermission(type.getPermission())) return;
         
-        if(diff <= 1.85 && diff > 1.38) hitArea = HitArea.HEAD;
-        else if(diff <= 1.38 && diff > 1.26) hitArea = HitArea.NECK;
-        else if(diff <= 1.26 && diff > 0.74) hitArea = HitArea.TORSO;
-        else if(diff <= 0.74 && diff > 0.46) hitArea = HitArea.CROTCH;
-        else if(diff <= 0.46 && diff > 0.17) hitArea = HitArea.LEGS;
-        else if(diff <= 0.17 && diff > 0) hitArea = HitArea.TOE;
-        else hitArea = HitArea.UNKNOWN;
+        HitArea hitArea = HitArea.get(event.getDamager().getLocation().getY() - event.getEntity().getLocation().getY());
         
-        ProjectileCritEvent apiEvent = new ProjectileCritEvent(event, hitArea);
+        double damageMultiplyer = hitArea.getDamage();
+        
+        ProjectileCritEvent apiEvent = new ProjectileCritEvent(event, hitArea, damageMultiplyer);
         Bukkit.getServer().getPluginManager().callEvent(apiEvent);
         if(apiEvent.isCancelled()) return;
         
@@ -105,7 +123,21 @@ public class ArrowComponent extends Component implements Listener {
             Experimental.createEffect(ParticleEffectType.CRIT, "", event.getEntity().getLocation(), 1f, 1f, 1f, 20);
         }
         
-        event.setDamage(event.getDamage() * hitArea.modifier);
+        event.setDamage(event.getDamage() * damageMultiplyer);
+        
+        hitArea.applyEffects((LivingEntity) event.getEntity());
+    }
+    
+    /**
+     * Checks whether the specified entity type is valid
+     * @param type Entity type to check
+     * @return <b>true</b> if the type is valid, <b>false</b> otherwise
+     */
+    private static boolean isTypeValid(EntityType type) {
+        for(EntityType testType : VALID_ENTITIES) {
+            if(testType.equals(type)) return true;
+        }
+        return false;
     }
     
     /**
@@ -113,7 +145,6 @@ public class ArrowComponent extends Component implements Listener {
      * @author bitWolfy
      *
      */
-    @Getter(AccessLevel.PUBLIC)
     public enum HitArea {
         
         HEAD    ("head"),
@@ -126,8 +157,12 @@ public class ArrowComponent extends Component implements Listener {
         UNKNOWN ("unknown"),
         ;
         
+        private static Random random = new Random();
+        
         private String key;
-        private double modifier;
+        private double damage;
+        private double damageRange;
+        private List<PotionEffectType> effects;
         
         HitArea(String key) {
             this.key = key;
@@ -135,11 +170,53 @@ public class ArrowComponent extends Component implements Listener {
         }
         
         private void refresh() {
-            modifier = Physics.getInstance().getConfig().getDouble("arrows.modifiers." + key);
+            FileConfiguration configFile = Physics.getInstance().getConfig();
+            damage = configFile.getDouble("arrows.modifiers." + key + ".damage");
+            damageRange = configFile.getDouble("arrows.modifiers." + key + ".damage-range");
+            
+            List<String> effectsList = configFile.getStringList("arrows.modifiers." + key + ".effects");
+            effects = new ArrayList<PotionEffectType>();
+            for(String str : effectsList) {
+                PotionEffectType effectType = PotionEffectType.getByName(str);
+                if(effectType != null) effects.add(effectType);
+            }
+        }
+        
+        /**
+         * Returns the randomized damage
+         * @return Randomized damage within the pre-defined range
+         */
+        private double getDamage() {
+            return damage + (random.nextDouble() * damageRange);
+        }
+        
+        /**
+         * Applies the potion effects to the entity
+         * @param player Entity to apply the effects to
+         */
+        private void applyEffects(LivingEntity entity) {
+            for(PotionEffectType effect : effects) { 
+                entity.addPotionEffect(new PotionEffect(effect, 1000, 50));
+            }
         }
         
         public static void clearCache() {
             for(HitArea area : HitArea.values()) area.refresh();
+        }
+        
+        /**
+         * Returns the hit area based on the height
+         * @param height Height to look for
+         */
+        public static HitArea get(double height) {
+            if(height <= 1.85 && height > 1.38) return HitArea.HEAD;
+            else if(height <= 1.38 && height > 1.26) return HitArea.NECK;
+            else if(height <= 1.26 && height > 0.74) return HitArea.TORSO;
+            else if(height <= 0.74 && height > 0.46) return HitArea.CROTCH;
+            else if(height <= 0.46 && height > 0.17) return HitArea.LEGS;
+            else if(height <= 0.17 && height > 0) return HitArea.TOE;
+            
+            return HitArea.UNKNOWN;
         }
         
     }
