@@ -24,10 +24,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 
 import org.bukkit.block.Block;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.HandlerList;
 
 import com.shackledmc.physics.ComponentManager.ComponentType;
-import com.shackledmc.physics.components.PistonComponent.LaunchedBlock;
 
 /**
  * An event thrown when a power piston launches a block
@@ -40,9 +40,9 @@ public class PistonBlockLaunchEvent extends PhysicsEvent {
     private static final HandlerList handlers = new HandlerList();
     
     private Block piston;
-    private LaunchedBlock launchedBlock;
+    private FallingBlock launchedBlock;
     
-    public PistonBlockLaunchEvent(Block piston, LaunchedBlock launchedBlock) {
+    public PistonBlockLaunchEvent(Block piston, FallingBlock launchedBlock) {
         super(ComponentType.PISTON);
         
         this.piston = piston;

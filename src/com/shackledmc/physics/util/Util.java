@@ -24,7 +24,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.material.MaterialData;
+import org.bukkit.util.Vector;
 
 /**
  * A set of methods used to perform operations with blocks
@@ -33,6 +35,23 @@ import org.bukkit.material.MaterialData;
  */
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public class Util {
+    
+    /**
+     * Takes in a BlockFace and returns a corresponding unit vector
+     * @param direction Block face
+     * @return Unit vector
+     */
+    public static Vector directionToVector(BlockFace direction) {
+        switch(direction) {
+            case SOUTH: return new Vector(0, 0, 1);
+            case NORTH: return new Vector(0, 0, -1);
+            case EAST: return new Vector(1, 0, 0);
+            case WEST: return new Vector(-1, 0, 0);
+            case UP: return new Vector(0, 1, 0);
+            case DOWN: return new Vector(0, -1, 0);
+            default: return null;
+        }
+    }
     
     /**
      * Takes in <b>MaterialData</b> and returns a user-friendly name.<br />

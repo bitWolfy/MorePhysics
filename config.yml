@@ -93,8 +93,12 @@ pistons:
         enabled: true
         modifier: 1.0
     power:
-        entities: 4.0
-        blocks: 3.0
+        entities: 1.0
+        blocks: 1.0
+    pushed-blocks:
+    - 12
+    - 13
+    pushed-blocks-whitelist: false
     effects: true
 player:
     enabled: true

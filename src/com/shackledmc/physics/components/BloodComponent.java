@@ -89,17 +89,14 @@ public class BloodComponent extends Component implements Listener {
             if(!BloodModifier.PLAYERS.enabled) return;
             
             Experimental.createBlockEffect(entity.getLocation(), BloodModifier.PLAYERS.color.blockId);
-            Experimental.createBlockEffect(entity.getLocation(), BloodColor.GLITTER.blockId);
         } else if(entity instanceof Animals) {
             if(!BloodModifier.ANIMALS.enabled) return;
             
             Experimental.createBlockEffect(entity.getLocation(), BloodModifier.ANIMALS.color.blockId);
-            Experimental.createBlockEffect(entity.getLocation(), BloodColor.GLITTER.blockId);
         } else if(entity instanceof Monster || entity instanceof Slime) {
             if(!BloodModifier.MOBS.enabled) return;
             
             Experimental.createBlockEffect(entity.getLocation(), BloodModifier.MOBS.color.blockId);
-            Experimental.createBlockEffect(entity.getLocation(), BloodColor.GLITTER.blockId);
             
         }
     }
@@ -139,9 +136,8 @@ public class BloodComponent extends Component implements Listener {
         
         WHITE           ("white", 155),
         WHITE_ALT       ("white_alt", 42),
-        RED             ("red", 331),
-        RED_ALT         ("red_alt", 46),
-        RED_ALT_2       ("red_alt_2", 152),
+        RED             ("red_alt", 152),
+        RED_ALT         ("red_alt_2", 87),
         YELLOW          ("yellow", 41),
         YELLOW_ALT      ("yellow_alt", 42),
         BLUE            ("blue", 22),
