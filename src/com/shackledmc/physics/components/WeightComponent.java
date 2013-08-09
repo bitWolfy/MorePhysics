@@ -38,6 +38,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -74,6 +75,8 @@ public class WeightComponent extends Component implements Listener {
     private boolean exemptCreative;
     private boolean costlyRecalc;
     
+    private boolean onlyProcessArmor;
+    
     private FileConfiguration weightData = null;
     private File weightDataFile = null;
     
@@ -89,6 +92,7 @@ public class WeightComponent extends Component implements Listener {
         speedMultiplyer = configFile.getDouble("weight.speed-modifier") * SPEED_MODIFIER_RATIO;
         defaultSpeed = configFile.getDouble("weight.default-speed") * DEFAULT_SPEED_RATIO;
         
+        onlyProcessArmor = configFile.getBoolean("weight.only-process-armor");
         
         exemptCreative = configFile.getBoolean("weight.exempt-creative");
         costlyRecalc = configFile.getBoolean("weight.recalculate-when-walking");
@@ -142,10 +146,24 @@ public class WeightComponent extends Component implements Listener {
     }
     
     @EventHandler
-    public void onPlayerQuite(PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         
         setPlayerSpeed(player, getDefaultPlayerSpeed());
+    }
+    
+    @EventHandler
+    public void onGamemodeChange(PlayerGameModeChangeEvent event) {
+        Player player = event.getPlayer();
+        
+        if(exemptWorlds.contains(player.getWorld().getName())
+                || !player.hasPermission(type.getPermission())
+                || (exemptCreative && event.getNewGameMode().equals(GameMode.CREATIVE))) {
+            setPlayerSpeed(player, getDefaultPlayerSpeed());
+            return;
+        }
+        
+        calculatePlayerSpeed(player);
     }
     
     @EventHandler
@@ -285,10 +303,13 @@ public class WeightComponent extends Component implements Listener {
         PlayerInventory inventory = player.getInventory();
         
         double totalWeight = 0;
-        ListIterator<ItemStack> it = inventory.iterator();
-        while(it.hasNext()) {
-            ItemStack curItem = (ItemStack) it.next();
-            if(curItem != null) totalWeight += getStackWeight(curItem);
+        
+        if(onlyProcessArmor) {
+            ListIterator<ItemStack> it = inventory.iterator();
+            while(it.hasNext()) {
+                ItemStack curItem = (ItemStack) it.next();
+                if(curItem != null) totalWeight += getStackWeight(curItem);
+            }
         }
         
         for(ItemStack armor : inventory.getArmorContents()) totalWeight += getStackWeight(armor);

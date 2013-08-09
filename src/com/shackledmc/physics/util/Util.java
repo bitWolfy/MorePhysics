@@ -17,15 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
-
+ 
 package com.shackledmc.physics.util;
-
+ 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
+ 
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.material.MaterialData;
-
+import org.bukkit.util.Vector;
+ 
 /**
  * A set of methods used to perform operations with blocks
  * @author bitWolfy
@@ -33,7 +35,24 @@ import org.bukkit.material.MaterialData;
  */
 @NoArgsConstructor(access=AccessLevel.PRIVATE)
 public class Util {
-    
+     
+    /**
+     * Takes in a BlockFace and returns a corresponding unit vector
+     * @param direction Block face
+     * @return Unit vector
+     */
+    public static Vector directionToVector(BlockFace direction) {
+        switch(direction) {
+            case SOUTH: return new Vector(0, 0, 1);
+            case NORTH: return new Vector(0, 0, -1);
+            case EAST: return new Vector(1, 0, 0);
+            case WEST: return new Vector(-1, 0, 0);
+            case UP: return new Vector(0, 1, 0);
+            case DOWN: return new Vector(0, -1, 0);
+            default: return null;
+        }
+    }
+     
     /**
      * Takes in <b>MaterialData</b> and returns a user-friendly name.<br />
      * Inverse method to <i>getBlockMaterial(String blockName)</i>
@@ -47,7 +66,7 @@ public class Util {
         if(!meta.equalsIgnoreCase("0")) name = meta + " " + name;
         return name;
     }
-    
+     
     /**
      * Takes in a block name and returns the corresponding <b>MaterialData</b><br />
      * Accepts values with metadata, separated by a colon (`:`).<br />
@@ -58,9 +77,9 @@ public class Util {
     public static MaterialData getBlockMaterial(String blockName) {
         String[] parts = blockName.split(":");
         if(parts.length > 2) return null;
-        
+         
         MaterialData block = null;
-        
+         
         try {
             if(isNumeric(parts[0])) block = new MaterialData(Material.getMaterial(Integer.parseInt(parts[0])));
             else {
@@ -68,18 +87,18 @@ public class Util {
                 if(ore != null) parts[0] = ore.getMaterial();
                 block = new MaterialData(Material.getMaterial(parts[0].toUpperCase()));
             }
-            
+             
             parts[0] = block.getItemTypeId() + "";
-            
+             
             if(parts.length == 2) {
                 if(!isNumeric(parts[1])) parts[1] = parseMetadata(parts, false);
                 block.setData(Byte.parseByte(parts[1]));
             }
         } catch(Throwable t) { return null; }
-        
+         
         return block;
     }
-    
+     
     /**
      * Returns the data of the block specified
      * @param parts Block name
@@ -98,7 +117,7 @@ public class Util {
                     else if(data == 2) parts[1] = "birch";
                     else if(data == 3) parts[1] = "jungle";
                     else parts[1] = "oak";
-
+ 
                     break;
                 }
                 case 24:
@@ -106,7 +125,7 @@ public class Util {
                     if(data == 1) parts[1] = "chiseled";
                     else if(data == 2) parts[1] = "smooth";
                     else parts[1] = "";
-
+ 
                     break;
                 }
                 case 33:
@@ -119,7 +138,7 @@ public class Util {
                     else if(data == 5) parts[1] = "stone brick";
                     else if(data == 6) parts[1] = "smooth";
                     else parts[1] = "stone";
-
+ 
                     break;
                 }
                 case 35:
@@ -140,7 +159,7 @@ public class Util {
                     else if(data == 14) parts[1] = "red";
                     else if(data == 15) parts[1] = "black";
                     else parts[1] = "white";
-
+ 
                     break;
                 }
                 case 84:
@@ -157,7 +176,7 @@ public class Util {
                     else if(data == 10) parts[1] = "sea green disk";
                     else if(data == 11) parts[1] = "broken disk";
                     else parts[1] = "";
-
+ 
                     break;
                 }
                 case 98:
@@ -228,7 +247,7 @@ public class Util {
         }
         return parts[1];
     }
-    
+     
     /**
      * Checks if a string is numeric
      * @param str String String to be checked
