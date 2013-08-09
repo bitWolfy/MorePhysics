@@ -1,8 +1,10 @@
-![](http://update.wolvencraft.com/MorePhysics/logo.png)
+![](http://static.wolvencraft.com/img/morephysics/logo-normal.png)
 
-## [ [Latest version](http://dev.bukkit.org/server-mods/morephysics/files/) | [Latest Dev Build](http://build.wolvencraft.com:8080/job/MorePhysics/lastSuccessfulBuild/) | [Bug tracker](https://github.com/bitWolfy/MorePhysics/issues) | [Source](https://github.com/bitWolfy/MorePhysics/) ] ##
+## Download: [ [Recommended builds](http://dev.bukkit.org/server-mods/morephysics/files/) | [Development builds](http://shackledmc.com:8080/job/MorePhysics/) ] ##
 
-**MorePhysics** does exactly what its name suggests: it adds more physics effects to the game. Do not expect to sprint jump everywhere in your diamond armor, get rid of the habit of stopping minecarts with your own body, and have fun with launchy pistons! All of this, and more, is packed inside this highly configurable plugin.
+Do you miss the pistons that launch everything into the air? Do you think that carrying hundreds of tons worth of blocks in your pockets is overpowered? Should the boats sink when taking damage, or should colliding with a speeding minecart cause some internal trauma?
+
+Good news - I have the plugin just for you. MorePhysics does exactly that - and more.
 
 ### Features: ###
 * Armour now weighs you down!
