@@ -120,6 +120,7 @@ player:
 weight:
     enabled: true
     exempt-worlds: []
+    only-process-armor: false
     speed-modifier: 1.0
     default-speed: 1.0
     exempt-creative: true
