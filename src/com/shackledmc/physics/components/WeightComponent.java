@@ -38,6 +38,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -145,10 +146,24 @@ public class WeightComponent extends Component implements Listener {
     }
     
     @EventHandler
-    public void onPlayerQuite(PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         
         setPlayerSpeed(player, getDefaultPlayerSpeed());
+    }
+    
+    @EventHandler
+    public void onGamemodeChange(PlayerGameModeChangeEvent event) {
+        Player player = event.getPlayer();
+        
+        if(exemptWorlds.contains(player.getWorld().getName())
+                || !player.hasPermission(type.getPermission())
+                || (exemptCreative && event.getNewGameMode().equals(GameMode.CREATIVE))) {
+            setPlayerSpeed(player, getDefaultPlayerSpeed());
+            return;
+        }
+        
+        calculatePlayerSpeed(player);
     }
     
     @EventHandler
