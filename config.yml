@@ -99,7 +99,7 @@ pistons:
     pushed-blocks:
     - 12
     - 13
-    pushed-blocks-whitelist: false
+    pushed-blocks-blacklist: false
     effects: true
 player:
     enabled: true

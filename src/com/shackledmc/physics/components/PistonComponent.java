@@ -80,7 +80,7 @@ public class PistonComponent extends Component implements Listener {
     private boolean signControlled;
     
     private List<MaterialData> pushedBlocks;
-    private boolean pushedBlocksWhitelist;
+    private boolean pushedBlocksBlacklist;
     
     private boolean effects;
     
@@ -105,7 +105,7 @@ public class PistonComponent extends Component implements Listener {
             if(material == null) continue;
             pushedBlocks.add(material);
         }
-        pushedBlocksWhitelist = configFile.getBoolean("pistons.pushed-blocks-whitelist");
+        pushedBlocksBlacklist = configFile.getBoolean("pistons.pushed-blocks-blacklist");
         
         effects = configFile.getBoolean("pistons.effects");
     }
@@ -169,7 +169,7 @@ public class PistonComponent extends Component implements Listener {
         
         // XXX
         for(Block block : pushedBlocks) {
-            if((pushedBlocksWhitelist && !pushedBlocks.contains(block.getData()))
+            if((pushedBlocksBlacklist && !pushedBlocks.contains(block.getData()))
                     || pushedBlocks.contains(block.getData())) break;
             
             FallingBlock fBlock = world.spawnFallingBlock(block.getLocation().clone().add(directionVector), block.getType(), block.getData());
