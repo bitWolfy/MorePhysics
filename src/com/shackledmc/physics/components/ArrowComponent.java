@@ -67,6 +67,7 @@ public class ArrowComponent extends Component implements Listener {
         EntityType.WITHER
     };
     
+    private boolean playersOnly;
     private boolean effects;
     
     public ArrowComponent() {
@@ -75,7 +76,10 @@ public class ArrowComponent extends Component implements Listener {
         if(!enabled) return;
         
         HitArea.clearCache();
-        effects = Physics.getInstance().getConfig().getBoolean("arrows.effects");
+        
+        FileConfiguration configFile = Physics.getInstance().getConfig();
+        effects = configFile.getBoolean("arrows.effects");
+        playersOnly = configFile.getBoolean("arrows.players-only");
     }
     
     @Override
@@ -106,7 +110,8 @@ public class ArrowComponent extends Component implements Listener {
         if(exemptWorlds.contains(event.getEntity().getWorld().getName())) return;
         
         // Check whether the damaged entity type is valid (i.e. humanoid-ish)
-        if(!isTypeValid(event.getEntityType())) return;
+        if((playersOnly && !(event.getEntity() instanceof Player))
+                || !isTypeValid(event.getEntityType()))  return;
         
         // If the damaged entity is a player, check for permissions
         if(event.getEntity() instanceof Player && !((Player) event.getEntity()).hasPermission(type.getPermission())) return;

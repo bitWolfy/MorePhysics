@@ -30,6 +30,7 @@ arrows:
             damage: 1.0
             damage-range: 0.0
             effects: []
+    players-only: false
     effects: true
 blocks:
     enabled: true
