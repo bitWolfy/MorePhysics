@@ -1,6 +1,0 @@
-<plugin>
-    <name>MorePhysics</name>
-    <version>2.3.0</version>
-    <craftbukkit>CB 1.5.2-R0.1</craftbukkit>
-    <type>Development Build</type>
-</plugin>
