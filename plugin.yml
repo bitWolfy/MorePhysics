@@ -1,7 +1,7 @@
 name: MorePhysics
 main: com.shackledmc.physics.Physics
 website: http://dev.bukkit.org/bukkit-plugins/physics/
-version: 2.3.0
+version: 2.3
 authors: [FriedTaco, bitWolfy]
 commands:
     physics:
