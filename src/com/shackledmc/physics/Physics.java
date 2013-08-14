@@ -27,6 +27,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.shackledmc.physics.metrics.Statistics;
+import com.shackledmc.physics.update.UpdateChecker;
+import com.shackledmc.physics.update.UpdateChecker.ConnectionTimeoutException;
 import com.shackledmc.physics.util.Message;
 
 public class Physics extends JavaPlugin {
@@ -68,6 +70,19 @@ public class Physics extends JavaPlugin {
                     "| [X] Movement fix is not compatible with your  |",
                     "      version of CraftBukkit. Disabled...       |");
         }
+        
+        try {
+            if(new UpdateChecker(this).isUpdateAvailable()) {
+                Message.log(
+                        "|                                               |",
+                        "| [X] New version of the plugin is available on |",
+                        "|     BukkitDev: http://bit.ly/bukkitphysics    |",
+                        "|                                               |"
+                        );
+            }
+        } catch (ConnectionTimeoutException ex) {
+            Message.log("| [X] Unable to connect to the update server    |");
+        } catch (Throwable t) { }
         
         Message.log(
                 "| [X] MorePhysics is enabled                    |",

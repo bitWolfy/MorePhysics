@@ -129,3 +129,6 @@ misc:
     debug: false
     movement-fix: true
     prefix: "[MorePhysics]"
+updater:
+    enabled: true
+    channel: recommended
